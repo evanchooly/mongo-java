@@ -7,6 +7,7 @@ import com.antwerkz.jfokus.jpa.model.Address;
 import com.antwerkz.jfokus.jpa.model.Product;
 import com.antwerkz.jfokus.jpa.model.ProductOrder;
 import com.antwerkz.jfokus.jpa.model.User;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -16,8 +17,18 @@ public class SystemTest extends BaseTest {
         orderForDave();
         orderForJules();
         orderForBruce();
-        print(dao.findOrdersOver(10000.0));
-        print(dao.findSmallOrders(2));
+
+        List<ProductOrder> orders = dao.findOrdersOver(10000.0);
+        Assert.assertEquals(orders.get(0).getUser().getFirstName(), "Jules");
+
+        List<ProductOrder> smallOrders = dao.findSmallOrders(2);
+        ProductOrder smallOrder = smallOrders.get(0);
+        Assert.assertEquals(smallOrder.getUser().getFirstName(), "David");
+        Assert.assertTrue(smallOrder.getProducts().size() <= 2);
+        try {
+            Assert.assertNull(dao.findByHairColor("red"));
+        } catch (Exception e) {
+        }
     }
 
     private void print(final List<ProductOrder> orders) {

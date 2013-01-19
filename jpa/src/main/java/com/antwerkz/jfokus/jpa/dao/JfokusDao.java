@@ -50,7 +50,8 @@ public class JfokusDao {
     }
 
     public List<ProductOrder> findOrdersOver(final double total) {
-        Query query = em.createQuery("select o from ProductOrder o join o.products p group by o having sum(p.price) > :total")
+        Query query = em.createQuery("select o from ProductOrder o join o.products p group by o having sum(p.price) > :total"
+            + " order by sum(p.price)")
             .setParameter("total", total);
         return query.getResultList();
     }
@@ -58,6 +59,12 @@ public class JfokusDao {
     public List<ProductOrder> findSmallOrders(final long count) {
         Query query = em.createQuery("select o from ProductOrder o join o.products p group by o having count(p) <= :count")
             .setParameter("count", count);
+        return query.getResultList();
+    }
+
+    public List<User> findByHairColor(final String color) {
+        Query query = em.createQuery("from User u where u.hairColor = :color")
+            .setParameter("color", color);
         return query.getResultList();
     }
 }
