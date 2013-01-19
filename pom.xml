@@ -23,6 +23,7 @@
     </scm>
 
     <properties>
+        <hibernate.version>4.1.9.Final</hibernate.version>
         <maven.version>3.0.4</maven.version>
     </properties>
 
@@ -57,32 +58,21 @@
     </build>
     <modules>
         <module>jpa</module>
+        <module>mongo</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-web-api</artifactId>
-                <version>6.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-entitymanager</artifactId>
-                <version>4.1.9.Final</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>4.1.9.Final</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>6.8</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-persist</artifactId>
+                <version>3.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
