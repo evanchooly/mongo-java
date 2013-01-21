@@ -1,6 +1,7 @@
 package com.antwerkz.jfokus.mongo.model;
 
 import com.google.code.morphia.annotations.Entity;
+import com.mongodb.DBObject;
 
 @Entity("addresses")
 public class Address extends JfokusEntity {
@@ -18,6 +19,15 @@ public class Address extends JfokusEntity {
         this.city = city;
         this.state = state;
         this.zip = zip;
+    }
+
+    public Address(final DBObject o) {
+        super(o);
+        street = get(o, "street");
+        street2 = get(o, "street2");
+        city = get(o, "city");
+        state = get(o, "state");
+        zip = get(o, "zip");
     }
 
     public String getCity() {

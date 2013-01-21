@@ -16,7 +16,10 @@ public class JfokusEntity {
         this.id = id;
     }
 
-    public void fromDBObject(final DBObject dbObject) {
+    public JfokusEntity() {
+    }
+
+    public JfokusEntity(final DBObject dbObject) {
         id = get(dbObject, "_id");
     }
 

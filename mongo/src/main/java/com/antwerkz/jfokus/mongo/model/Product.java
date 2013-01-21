@@ -19,13 +19,8 @@ public class Product extends JfokusEntity {
         this.price = price;
     }
 
-    public Product(final DBObject o) {
-        fromDBObject(o);
-    }
-
-    @Override
-    public void fromDBObject(final DBObject dbObject) {
-        super.fromDBObject(dbObject);
+    public Product(final DBObject dbObject) {
+        super(dbObject);
         name = get(dbObject, "name");
         price = get(dbObject, "price");
     }

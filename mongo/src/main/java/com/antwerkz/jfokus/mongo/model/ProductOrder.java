@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.antwerkz.jfokus.mongo.dao.JfokusDao;
-import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
@@ -15,7 +14,6 @@ import org.bson.types.ObjectId;
 public class ProductOrder extends JfokusEntity {
     private Date orderDate;
     private ObjectId userId;
-    @Embedded
     private List<Product> products = new ArrayList<>();
     private Boolean fulfilled;
     private Double total = 0.0;
@@ -24,12 +22,8 @@ public class ProductOrder extends JfokusEntity {
     public ProductOrder() {
     }
 
-    public ProductOrder(final DBObject next) {
-        fromDBObject(next);
-    }
-
-    public void fromDBObject(final DBObject dbObject) {
-        super.fromDBObject(dbObject);
+    public ProductOrder(final DBObject dbObject) {
+        super(dbObject);
         orderDate = get(dbObject, "orderDate");
         userId = get(dbObject, "userId");
         total = get(dbObject, "total");

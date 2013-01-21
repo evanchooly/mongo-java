@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.code.morphia.annotations.Entity;
+import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
 
 @Entity("users")
 public class User extends JfokusEntity {
@@ -19,6 +21,18 @@ public class User extends JfokusEntity {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public User(final DBObject dbObject) {
+        super(dbObject);
+        firstName = get(dbObject, "firstName");
+        lastName = get(dbObject, "lastName");
+        email = get(dbObject, "email");
+        addresses = new ArrayList<>();
+        BasicDBList list = get(dbObject, "products");
+        for (Object o : list) {
+            addresses.add(new Address((DBObject) o));
+        }
     }
 
     public List<Address> getAddresses() {

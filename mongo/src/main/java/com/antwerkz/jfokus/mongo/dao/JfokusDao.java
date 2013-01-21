@@ -8,6 +8,8 @@ import com.antwerkz.jfokus.mongo.model.JfokusEntity;
 import com.antwerkz.jfokus.mongo.model.Product;
 import com.antwerkz.jfokus.mongo.model.ProductOrder;
 import com.antwerkz.jfokus.mongo.model.User;
+import com.antwerkz.jfokus.mongo.model.criteria.ProductOrderCriteria;
+import com.antwerkz.jfokus.mongo.model.criteria.UserCriteria;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.annotations.Entity;
 import com.mongodb.BasicDBObject;
@@ -61,29 +63,35 @@ public class JfokusDao {
     }
 
     public List<ProductOrder> findOrdersOver(final double total) {
-        BasicDBObject query = new BasicDBObject("total", new BasicDBObject("$gt", total));
+        BasicDBObject query = new BasicDBObject("total", new BasicDBObject("$gte", total));
         List<ProductOrder> orders = new ArrayList<>();
         try (DBCursor cursor = db.getCollection(PRODUCT_ORDERS).find(query)) {
             while (cursor.hasNext()) {
                 orders.add(new ProductOrder(cursor.next()));
             }
         }
-
         return orders;
     }
 
     public List<ProductOrder> findOrdersOverWithMorphia(final double total) {
         return ds.createQuery(ProductOrder.class)
-            .filter("total >", total)
+            .filter("total >=", total)
             .order("total")
             .asList();
     }
+
     public List<ProductOrder> findOrdersOverWithJongo(final double total) {
         jongo.getCollection(PRODUCT_ORDERS).find("{ total : { $gte : # } }", total);
         return ds.createQuery(ProductOrder.class)
             .filter("total >", total)
             .order("total")
             .asList();
+    }
+
+    public List<ProductOrder> findOrdersOverWithCritter(final double total) {
+        ProductOrderCriteria criteria = new ProductOrderCriteria(ds);
+        criteria.total().greaterThanOrEq(total);
+        return criteria.query().asList();
     }
 
     public List<ProductOrder> findSmallOrders(final long count) {
@@ -94,7 +102,13 @@ public class JfokusDao {
 
     public List<User> findByHairColor(final String color) {
         return ds.createQuery(User.class).field("hairColor").equal(color).asList();
+    }
 
+    public List<User> findByHairColorWithCritter(final String color) {
+        UserCriteria criteria = new UserCriteria(ds);
+//        criteria.hairColor().equal(color);
+
+        return criteria.query().asList();
     }
 
     public User findUserByEmail(final String email) {
@@ -102,8 +116,13 @@ public class JfokusDao {
     }
 
     public User findUserWithDriver(final ObjectId userId) {
-        User id = ds.createQuery(User.class).field("_id").equal(userId).get();
-        return id;
+        BasicDBObject query = new BasicDBObject("_id", userId);
+        try (DBCursor cursor = db.getCollection("users").find(query)) {
+            if (cursor.hasNext()) {
+                return new User(cursor.next());
+            }
+        }
+        return null;
     }
 
     public User findUserWithMorphia(final ObjectId userId) {
@@ -111,11 +130,6 @@ public class JfokusDao {
     }
 
     public User findUserWithJongo(final ObjectId userId) {
-        User id = ds.createQuery(User.class).field("_id").equal(userId).get();
-        return id;
-    }
-
-    public User findUserWithCritter(final ObjectId userId) {
         User id = ds.createQuery(User.class).field("_id").equal(userId).get();
         return id;
     }

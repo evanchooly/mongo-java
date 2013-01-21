@@ -51,11 +51,13 @@ public class MongoSystemTest {
     @Test(dependsOnMethods = "placeOrder")
     public void compareQueryLayers() {
         List<ProductOrder> orders = dao.findOrdersOver(10000.0);
+        List<ProductOrder> morphia = dao.findOrdersOverWithMorphia(10000.0);
+        List<ProductOrder> jongo = dao.findOrdersOverWithJongo(10000.0);
+        List<ProductOrder> critter = dao.findOrdersOverWithCritter(10000.0);
         Assert.assertEquals(orders.size(), 2);
-        List<ProductOrder> orders2 = dao.findOrdersOverWithMorphia(10000.0);
-        List<ProductOrder> orders3 = dao.findOrdersOverWithJongo(10000.0);
-        Assert.assertEquals(orders, orders2);
-        Assert.assertEquals(orders, orders3);
+        Assert.assertEquals(orders, morphia);
+        Assert.assertEquals(orders, jongo);
+        Assert.assertEquals(orders, critter);
     }
 
     private void orderForBruce() {
