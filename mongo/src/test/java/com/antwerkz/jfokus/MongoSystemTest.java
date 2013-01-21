@@ -2,49 +2,65 @@ package com.antwerkz.jfokus;
 
 import java.util.Date;
 import java.util.List;
+import javax.inject.Inject;
 
-import com.antwerkz.jfokus.jpa.model.Address;
-import com.antwerkz.jfokus.jpa.model.Product;
-import com.antwerkz.jfokus.jpa.model.ProductOrder;
-import com.antwerkz.jfokus.jpa.model.User;
+import com.antwerkz.jfokus.mongo.dao.JfokusDao;
+import com.antwerkz.jfokus.mongo.model.Address;
+import com.antwerkz.jfokus.mongo.model.Product;
+import com.antwerkz.jfokus.mongo.model.ProductOrder;
+import com.antwerkz.jfokus.mongo.model.User;
+import com.mongodb.DB;
+import org.bson.types.ObjectId;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
+@SuppressWarnings("deprecation")
 @Test
-public class SystemTest extends BaseTest {
+@Guice(modules = {JfokusModule.class})
+public class MongoSystemTest {
+    @Inject
+    private DB db;
+    @Inject
+    protected JfokusDao dao;
+
     public void placeOrder() {
         orderForDave();
         orderForJules();
         orderForBruce();
 
         List<ProductOrder> orders = dao.findOrdersOver(10000.0);
-        Assert.assertEquals(orders.get(0).getUserId().getFirstName(), "Jules");
-
+        ObjectId userId = orders.get(0).getUserId();
+        Assert.assertEquals(dao.findUserWithMorphia(userId).getFirstName(), "Jules");
         List<ProductOrder> smallOrders = dao.findSmallOrders(2);
+
         ProductOrder smallOrder = smallOrders.get(0);
-        Assert.assertEquals(smallOrder.getUserId().getFirstName(), "David");
+        userId = smallOrder.getUserId();
+
+        User user = dao.findUserWithMorphia(userId);
+        Assert.assertEquals(user.getFirstName(), "David");
         Assert.assertTrue(smallOrder.getProducts().size() <= 2);
+
         try {
-            Assert.assertNull(dao.findByHairColor("red"));
+            Assert.assertNotNull(dao.findByHairColor("red"));
         } catch (Exception e) {
         }
     }
 
-    private void print(final List<ProductOrder> orders) {
-        for (ProductOrder order : orders) {
-            System.out.println("order = " + order);
-            double total = 0;
-            for (Product product : order.getProducts()) {
-                total += product.getPrice();
-            }
-            System.out.println("total = " + total);
-        }
+    @Test(dependsOnMethods = "placeOrder")
+    public void compareQueryLayers() {
+        List<ProductOrder> orders = dao.findOrdersOver(10000.0);
+        Assert.assertEquals(orders.size(), 2);
+        List<ProductOrder> orders2 = dao.findOrdersOverWithMorphia(10000.0);
+        List<ProductOrder> orders3 = dao.findOrdersOverWithJongo(10000.0);
+        Assert.assertEquals(orders, orders2);
+        Assert.assertEquals(orders, orders3);
     }
 
     private void orderForBruce() {
         ProductOrder order = new ProductOrder();
-        order.setUserId(dao.findUser("bruce@wayne.com"));
+        order.setUserId(dao.findUserByEmail("bruce@wayne.com").getId());
         order.setOrderDate(new Date(112, 1, 1));
         order.add(dao.findProduct("Quadtech"));
         order.add(dao.findProduct("Biolux"));
@@ -55,7 +71,7 @@ public class SystemTest extends BaseTest {
 
     private void orderForDave() {
         ProductOrder order = new ProductOrder();
-        order.setUserId(dao.findUser("dbowman@jpl.nasa.gov"));
+        order.setUserId(dao.findUserByEmail("dbowman@jpl.nasa.gov").getId());
         order.setOrderDate(new Date(112, 6, 15));
         order.add(dao.findProduct("Spacesuit"));
         order.add(dao.findProduct("Computer Repair for Rocket Scientists (Hardcover)"));
@@ -65,7 +81,7 @@ public class SystemTest extends BaseTest {
 
     private void orderForJules() {
         ProductOrder order = new ProductOrder();
-        order.setUserId(dao.findUser("jules@hotmail.com"));
+        order.setUserId(dao.findUserByEmail("jules@hotmail.com").getId());
         order.setOrderDate(new Date(112, 8, 27));
         order.add(dao.findProduct("Tiptone"));
         order.add(dao.findProduct("Bigzamnix"));
@@ -74,31 +90,32 @@ public class SystemTest extends BaseTest {
         dao.save(order);
     }
 
-    @BeforeClass
-    private void createUser() {
-        createUserWithAddress("David", "Bowman", "dbowman@jpl.nasa.gov", "123 Rocket Ln", "Houston", "TX", "77058");
-        createUserWithAddress("Heywood", "Floyd", "hfloyd@jpl.nasa.gov", "2101 NASA Road 1", "Cape Canaveral", "FL", "32920");
-        createUserWithAddress("Bruce", "Wayne", "bruce@wayne.com", "1 Wayne Road", "Gotham", "NY", "10014");
-        createUserWithAddress("Walter", "Sobchak", "walter@geemail.com", "1760 Hillhurst Ave", "Los Angeles", "CA", "90001");
-        createUserWithAddress("Jules", "Winnfield", "jules@hotmail.com", "1858 N Vermont Ave", "Los Angeles", "CA", "90027");
-    }
-
     private void createUserWithAddress(final String firstName, final String lastName, final String email,
         final String street, final String city, final String state, final String zip) {
         User user = new User(firstName, lastName, email);
-        user.getAddresses().add(createAddress(street, city, state, zip));
+        user.getAddresses().add(new Address(street, city, state, zip));
         dao.save(user);
     }
 
-    private Address createAddress(final String street, final String city, final String state,
-        final String zip) {
-        Address address = new Address(street, city, state, zip);
-        dao.save(address);
-        return address;
+    @BeforeTest
+    private void createDataSet() {
+        dao.clearAll();
+        createUser();
+        createCatalog();
     }
 
-    @BeforeClass
-    public void createCatalog() {
+    private void createUser() {
+        createUserWithAddress("David", "Bowman", "dbowman@jpl.nasa.gov", "123 Rocket Ln", "Houston", "TX", "77058");
+        createUserWithAddress("Heywood", "Floyd", "hfloyd@jpl.nasa.gov", "2101 NASA Road 1", "Cape Canaveral", "FL",
+            "32920");
+        createUserWithAddress("Bruce", "Wayne", "bruce@wayne.com", "1 Wayne Road", "Gotham", "NY", "10014");
+        createUserWithAddress("Walter", "Sobchak", "walter@geemail.com", "1760 Hillhurst Ave", "Los Angeles", "CA",
+            "90001");
+        createUserWithAddress("Jules", "Winnfield", "jules@hotmail.com", "1858 N Vermont Ave", "Los Angeles", "CA",
+            "90027");
+    }
+
+    private void createCatalog() {
         dao.save(new Product("Spacesuit", 8693.0));
         dao.save(new Product("Macbook Pro", 4988.0));
         dao.save(new Product("Computer Repair for Rocket Scientists (Hardcover)", 23.45));
@@ -125,7 +142,5 @@ public class SystemTest extends BaseTest {
         dao.save(new Product("Nimin", 7610.94));
         dao.save(new Product("Geo Tax", 273.47));
         dao.save(new Product("Bio Air", 363.26));
-
-
     }
 }

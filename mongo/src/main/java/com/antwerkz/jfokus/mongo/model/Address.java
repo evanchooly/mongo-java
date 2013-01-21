@@ -1,13 +1,9 @@
-package com.antwerkz.jfokus.jpa.model;
+package com.antwerkz.jfokus.mongo.model;
 
 import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-import org.bson.types.ObjectId;
 
 @Entity("addresses")
-public class Address {
-    @Id
-    private ObjectId id;
+public class Address extends JfokusEntity {
     private String street;
     private String street2;
     private String city;
@@ -22,14 +18,6 @@ public class Address {
         this.city = city;
         this.state = state;
         this.zip = zip;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(final ObjectId id) {
-        this.id = id;
     }
 
     public String getCity() {

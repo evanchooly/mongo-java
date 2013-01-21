@@ -1,16 +1,12 @@
-package com.antwerkz.jfokus.jpa.model;
+package com.antwerkz.jfokus.mongo.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-import org.bson.types.ObjectId;
 
 @Entity("users")
-public class User {
-    @Id
-    private ObjectId id;
+public class User extends JfokusEntity {
     private String firstName;
     private String lastName;
     private String email;
@@ -23,14 +19,6 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(final ObjectId id) {
-        this.id = id;
     }
 
     public List<Address> getAddresses() {
@@ -73,7 +61,7 @@ public class User {
         final StringBuilder sb = new StringBuilder();
         sb.append("User");
         sb.append("{");
-        sb.append(" id=").append(id);
+        sb.append(" id=").append(getId());
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", lastName='").append(lastName).append('\'');
         sb.append(", email='").append(email).append('\'');

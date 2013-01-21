@@ -11,8 +11,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+@SuppressWarnings("deprecation")
 @Test
-public class SystemTest extends BaseTest {
+public class JpaSystemTest extends BaseTest {
     public void placeOrder() {
         orderForDave();
         orderForJules();
@@ -25,8 +26,9 @@ public class SystemTest extends BaseTest {
         ProductOrder smallOrder = smallOrders.get(0);
         Assert.assertEquals(smallOrder.getUser().getFirstName(), "David");
         Assert.assertTrue(smallOrder.getProducts().size() <= 2);
+
         try {
-            Assert.assertNull(dao.findByHairColor("red"));
+            Assert.assertNotNull(dao.findByHairColor("red"));
         } catch (Exception e) {
         }
     }
