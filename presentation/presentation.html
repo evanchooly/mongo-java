@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mongo for JPA Developers</title>
+
+        <meta name="author" content="Justin lee">
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/sky.css" id="theme">
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+        <script>
+            document.write('<link rel="stylesheet" href="css/print/' + ( window.location.search.match(/print-pdf/gi)
+                    ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+        </script>
+
+        <style>
+            li {
+                list-style-image: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h1>Mongo
+                        <br>for JPA Developers</h1>
+
+                    <h3>Justin Lee</h3>
+                    <h4>Senior Software Developer <br>@ squarespace.com</h4>
+                    http://antwerkz.com
+                    @evanchooly
+                </section>
+                <section>
+                    <section>
+                        <h2>Who Am I?</h2>
+
+                        <ul>
+                            <li class="fragment roll-in ">Java Developer since 1996</li>
+                            <li class="fragment roll-in">Currently Sr. Software Engineer at Squarespace.com
+                            <li class="fragment roll-in">Former member of the GlassFish/Grizzly team
+                                <ul>
+                                    <li class="fragment roll-in">Implemented the WebSocket support for GlassFish 3.1.x
+                                        and 3.2
+                                    <li class="fragment roll-in">JSR 356 (WebSocket) Expert Group Member</li>
+                                </ul>
+                            <li class="fragment roll-in">Worked with EE since 2000</li>
+                            <ul class="fragment roll-in">
+                                <li class="fragment shrink fade-out">We built our own ORM
+                            </ul>
+                        </ul>
+                        <aside class="notes">
+                            <ul>
+                                <li>JSP 0.92ish</li>
+
+                            </ul>
+                        </aside>
+                    </section>
+
+                </section>
+                <section>
+                    <section>
+                        <h2>What is Mongo?</h2>
+                        <ul>
+                            <li class="fragment roll-in ">Name derives from "humongous" which mean big (for you
+                                non-idiomatic English speakers)
+                            <li class="fragment roll-in ">It is a scalable, high-performance, open source NoSQL database
+                            <li class="fragment roll-in ">Written in C++</li>
+                            <li class="fragment roll-in ">Document oriented</li>
+                            <li class="fragment roll-in ">Fully indexable</li>
+                            <li class="fragment roll-in ">Replication and HA</li>
+                            <li class="fragment roll-in ">Map Reduce</li>
+                            <li class="fragment roll-in ">GridFS</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Document Oriented</h2>
+                        <ul>
+                            <li class="fragment roll-in ">In JPA, one object is typically mapped across multiple cells
+                                in one row of a table
+                                <ul class="fragment roll-in ">
+                                    <li>sometimes multiple objects with embedded entities</li>
+                                </ul>
+                            </li>
+                            <li class="fragment roll-in ">Documents stored in json-style documents
+                                    <ul >
+                                    <li class="fragment roll-in">actually BSON (<a href="http://bsonspec.org">http://bsonspec.org</a>) </li>
+                                    <li class="fragment roll-in">BSON adds some "extra" information to documents, like length prefixes, that
+                                        traversal efficient.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>What does a document look like?</h4>
+                        db.users.find().pretty()
+                        <pre>
+                            <code>
+{
+    "_id" : ObjectId("50fdb55a18c650918ee414be"),
+    "className" : "com.antwerkz.jfokus.mongo.model.User",
+    "firstName" : "Jules",
+    "lastName" : "Winnfield",
+    "email" : "jules@hotmail.com",
+    "addresses" : [
+        {
+            "street" : "1858 N Vermont Ave",
+            "city" : "Los Angeles",
+            "state" : "CA",
+            "zip" : "90027"
+        }
+    ]
+}
+                            </code>
+                        </pre>
+                    </section>
+                    <section>
+                        <h2>Replication and HA</h2>
+                        <ul>
+                            <li>eventually consistent</li>
+                            <li>replica sets</li>
+                            <li>sharding</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <h2>Links</h2>
+                    <ul>
+                        <li><a href="http://www.mongodb.org/">http://www.mongodb.org/</a> Mongo Homepage</li>
+                        <li><a href="http://code.google.com/p/morphia/">http://code.google.com/p/morphia/</a> Morphia
+                            homepage
+                        </li>
+                        <li><a href="https://github.com/jmkgreen/morphia">https://github.com/jmkgreen/morphia</a> Morphia
+                            fork
+                        </li>
+                        <li><a href="http://jongo.org">http://jongo.org</a> Jongo</li>
+                        <li>Disclaimer: My Stuff</li>
+                        <ul>
+                            <li>
+                                <a href="https://github.com/evanchooly/critter">https://github.com/evanchooly/critter</a>
+                                critter
+                            </li>
+                            <li>
+                                <a href="https://github.com/evanchooly/ophelia">https://github.com/evanchooly/ophelia</a>
+                                Ophelia
+                            </li>
+                        </ul>
+                    </ul>
+                </section>
+                <section>
+                    <h1>Mongo
+                        <br>for JPA Developers</h1>
+
+                    <h3>Justin Lee</h3>
+                    <h4>Senior Software Developer <br>@ squarespace.com</h4>
+                    http://antwerkz.com
+                    @evanchooly
+                </section>
+            </div>
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.min.js"></script>
+
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'lib/js/classList.js', condition: function () {
+                        return !document.body.classList;
+                    } },
+                    { src: 'plugin/markdown/showdown.js', condition: function () {
+                        return !!document.querySelector('[data-markdown]');
+                    } },
+                    { src: 'plugin/markdown/markdown.js', condition: function () {
+                        return !!document.querySelector('[data-markdown]');
+                    } },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                        hljs.initHighlightingOnLoad();
+                    } },
+                    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function () {
+                        return !!document.body.classList;
+                    } },
+                    { src: 'plugin/notes/notes.js', async: true, condition: function () {
+                        return !!document.body.classList;
+                    } }
+                    // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>
