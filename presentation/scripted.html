@@ -56,7 +56,6 @@ and 3.2
 <aside class="notes">
 <ul>
 <li>JSP 0.92ish</li>
-
 </ul>
 </aside>
 </section>
@@ -154,12 +153,16 @@ db.users.find().pretty()
 <section><code>db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 })</code><img src='images/page7.png'></section>
 
 
-<section><code>db.product_orders.update({ size : 3 }, {$push : {"baubles" : {color : "red"}}})</code><img src='images/page8.png'></section>
+<section><code>db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )</code><img src='images/page8.png'></section>
 
 
 <section><code>db.product_orders.find({ size : 3 })</code><img src='images/page9.png'></section>
 
 
+
+<section>
+<h1>TO THE CODE!</h1>
+</section>
 
 <section>
 <h2>Links</h2>
