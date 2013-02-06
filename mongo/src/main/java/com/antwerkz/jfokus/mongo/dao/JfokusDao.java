@@ -130,7 +130,6 @@ public class JfokusDao {
     }
 
     public User findUserWithJongo(final ObjectId userId) {
-        User id = ds.createQuery(User.class).field("_id").equal(userId).get();
-        return id;
+        return ds.createQuery(User.class).field("_id").equal(userId).get();
     }
 }
