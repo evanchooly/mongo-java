@@ -1,0 +1,12 @@
+* Queries:
+  * db.product_orders.find({ fulfilled : true }).limit(2).pretty()
+  * db.product_orders.find({ fulfilled : true, size : 3 }).limit(2).pretty()
+  * db.product_orders.find({ "products.name" : { $in : [ "Quadtech", "Biolux" ] } }).limit(2).pretty()
+  * db.product_orders.find({ "products.name" : "Quadtech" }).limit(2).pretty()
+  * db.product_orders.find({ $or : [ { size : 3 }, {fulfilled : false } ] }).limit(2).pretty()
+* Updates
+  * db.product_orders.find({ size : 3 }).pretty() 
+  * db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 }).pretty()
+  * db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )
+  * db.product_orders.find({ size : 3 }).pretty() 
+	
