@@ -35,6 +35,7 @@ public class MongoSystemTest {
     List<ProductOrder> orders = dao.findOrdersOver(10000.0);
     ObjectId userId = orders.get(0).getUserId();
     Assert.assertEquals(dao.findUserWithMorphia(userId).getFirstName(), "Jules");
+    Assert.assertEquals(dao.findUserWithJongo(userId).getFirstName(), "Jules");
     List<ProductOrder> smallOrders = dao.findSmallOrders(2);
     ProductOrder smallOrder = smallOrders.get(0);
     userId = smallOrder.getUserId();
