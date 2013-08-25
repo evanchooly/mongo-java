@@ -3,20 +3,20 @@
 function mng {
 	clear
 	echo $*
-	echo "use jfokus\n$*" | mongo | grep -v MongoDB | grep -v bye | grep -v "connecting to" | grep -v "switched to" | grep -v "use fokus"
+	echo "use mongojpa\n$*" | mongo | grep -v MongoDB | grep -v bye | grep -v "connecting to" | grep -v "switched to" | grep -v "use mongojpa"
 }
 
 rm -f jpa.out
-psql jfokus -t -c "\dt"  | cut -d\| -f2 | while read LINE
+psql mongojpa -t -c "\dt"  | cut -d\| -f2 | while read LINE
 do
 	echo "Table: $LINE\n" >> jpa.out
-	psql jfokus -c "select * from $LINE" 2>/dev/null >> jpa.out
+	psql mongojpa -c "select * from $LINE" 2>/dev/null >> jpa.out
 done
 
 mvn test
 rm -f /tmp/scripted
 COUNT=1
-ack "  \*" ~/personal/dev/jfokus/presentation/script | cut -c5- | while read LINE
+ack "  \*" /Users/jlee/personal/dev/presos/mongo4JpaDevs/presentation/script | cut -c5- | while read LINE
 do
 	mng ${LINE}
 	sleep 1

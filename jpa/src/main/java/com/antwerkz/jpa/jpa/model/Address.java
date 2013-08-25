@@ -1,4 +1,4 @@
-package com.antwerkz.jfokus.jpa.model;
+package com.antwerkz.jpa.jpa.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

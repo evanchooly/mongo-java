@@ -1,10 +1,10 @@
-package com.antwerkz.jfokus;
+package com.antwerkz.jpa;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import com.antwerkz.jfokus.jpa.dao.JfokusDao;
+import com.antwerkz.jpa.jpa.dao.JpaDao;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
@@ -19,10 +19,10 @@ public class BaseTest {
     private EntityManager em;
 
     @Inject
-    protected JfokusDao dao;
+    protected JpaDao dao;
 
     public BaseTest() {
-        Injector injector = Guice.createInjector(new JpaPersistModule("jfokus"));
+        Injector injector = Guice.createInjector(new JpaPersistModule("jpa"));
         persistService = injector.getInstance(PersistService.class);
         persistService.start();
         injector.injectMembers(this);

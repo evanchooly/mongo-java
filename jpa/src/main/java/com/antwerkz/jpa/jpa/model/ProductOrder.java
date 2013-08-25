@@ -1,4 +1,4 @@
-package com.antwerkz.jfokus.jpa.model;
+package com.antwerkz.jpa.jpa.model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;

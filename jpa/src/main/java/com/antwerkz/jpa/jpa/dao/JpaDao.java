@@ -1,17 +1,17 @@
-package com.antwerkz.jfokus.jpa.dao;
+package com.antwerkz.jpa.jpa.dao;
 
 import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.antwerkz.jfokus.jpa.model.Product;
-import com.antwerkz.jfokus.jpa.model.ProductOrder;
-import com.antwerkz.jfokus.jpa.model.User;
+import com.antwerkz.jpa.jpa.model.Product;
+import com.antwerkz.jpa.jpa.model.ProductOrder;
+import com.antwerkz.jpa.jpa.model.User;
 import com.google.inject.persist.Transactional;
 
 @SuppressWarnings("unchecked")
-public class JfokusDao {
+public class JpaDao {
     @Inject
     private EntityManager em;
 

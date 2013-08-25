@@ -1,12 +1,12 @@
-package com.antwerkz.jfokus;
+package com.antwerkz.jpa;
 
 import java.util.Date;
 import java.util.List;
 
-import com.antwerkz.jfokus.jpa.model.Address;
-import com.antwerkz.jfokus.jpa.model.Product;
-import com.antwerkz.jfokus.jpa.model.ProductOrder;
-import com.antwerkz.jfokus.jpa.model.User;
+import com.antwerkz.jpa.jpa.model.Address;
+import com.antwerkz.jpa.jpa.model.Product;
+import com.antwerkz.jpa.jpa.model.ProductOrder;
+import com.antwerkz.jpa.jpa.model.User;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

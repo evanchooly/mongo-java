@@ -1,11 +1,11 @@
-package com.antwerkz.jfokus.mongo.model;
+package com.antwerkz.mongo.model;
 
 import com.google.code.morphia.annotations.Id;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 
-public class JfokusEntity {
-    @Id
+public class MongoEntity {
+    @Id @org.jongo.marshall.jackson.oid.Id
     private ObjectId id;
 
     public final ObjectId getId() {
@@ -16,10 +16,10 @@ public class JfokusEntity {
         this.id = id;
     }
 
-    public JfokusEntity() {
+    public MongoEntity() {
     }
 
-    public JfokusEntity(final DBObject dbObject) {
+    public MongoEntity(final DBObject dbObject) {
         id = get(dbObject, "_id");
     }
 

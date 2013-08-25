@@ -1,13 +1,14 @@
-package com.antwerkz.jfokus.mongo.model;
+package com.antwerkz.jpa.jpa.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import com.google.code.morphia.annotations.Entity;
-import com.mongodb.DBObject;
-
-@Entity("products")
-public class Product extends JfokusEntity {
+@Entity
+@Table(name = "products")
+public class Product {
+    private Long id;
     private String name;
     private Double price;  // i know.  doubles are bad for money...
 
@@ -19,12 +20,15 @@ public class Product extends JfokusEntity {
         this.price = price;
     }
 
-    public Product(final DBObject dbObject) {
-        super(dbObject);
-        name = get(dbObject, "name");
-        price = get(dbObject, "price");
+    @Id
+    @GeneratedValue
+    public Long getId() {
+        return id;
     }
 
+    public void setId(final Long id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }
@@ -45,19 +49,10 @@ public class Product extends JfokusEntity {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Product");
-        sb.append("{id=").append(getId());
+        sb.append("{id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", price=").append(price);
         sb.append('}');
         return sb.toString();
-    }
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("_id", getId());
-        map.put("name", name);
-        map.put("price", price);
-
-        return map;
     }
 }

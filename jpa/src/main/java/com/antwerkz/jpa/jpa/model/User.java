@@ -1,14 +1,18 @@
-package com.antwerkz.jfokus.mongo.model;
+package com.antwerkz.jpa.jpa.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-import com.google.code.morphia.annotations.Entity;
-import com.mongodb.BasicDBList;
-import com.mongodb.DBObject;
-
-@Entity("users")
-public class User extends JfokusEntity {
+@Entity
+@Table(name = "users")
+public class User {
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
@@ -23,18 +27,17 @@ public class User extends JfokusEntity {
         this.email = email;
     }
 
-    public User(final DBObject dbObject) {
-        super(dbObject);
-        firstName = get(dbObject, "firstName");
-        lastName = get(dbObject, "lastName");
-        email = get(dbObject, "email");
-        addresses = new ArrayList<>();
-        BasicDBList list = get(dbObject, "products");
-        for (Object o : list) {
-            addresses.add(new Address((DBObject) o));
-        }
+    @Id
+    @GeneratedValue
+    public Long getId() {
+        return id;
     }
 
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     public List<Address> getAddresses() {
         if (addresses == null) {
             addresses = new ArrayList<>();
@@ -75,7 +78,7 @@ public class User extends JfokusEntity {
         final StringBuilder sb = new StringBuilder();
         sb.append("User");
         sb.append("{");
-        sb.append(" id=").append(getId());
+        sb.append(" id=").append(id);
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", lastName='").append(lastName).append('\'');
         sb.append(", email='").append(email).append('\'');

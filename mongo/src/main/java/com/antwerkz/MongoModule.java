@@ -1,8 +1,8 @@
-package com.antwerkz.jfokus;
+package com.antwerkz;
 
 import java.net.UnknownHostException;
 
-import com.antwerkz.jfokus.mongo.model.Address;
+import com.antwerkz.mongo.model.Address;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.google.inject.AbstractModule;
@@ -13,7 +13,7 @@ import com.mongodb.DB;
 import com.mongodb.Mongo;
 import org.jongo.Jongo;
 
-public class JfokusModule extends AbstractModule {
+public class MongoModule extends AbstractModule {
     @Override
     protected void configure() {
     }
@@ -22,12 +22,12 @@ public class JfokusModule extends AbstractModule {
     @Singleton
     public Datastore datastore() throws UnknownHostException {
         Morphia morphia = new Morphia().mapPackageFromClass(Address.class);
-        return morphia.createDatastore(new Mongo(), "jfokus");
+        return morphia.createDatastore(new Mongo(), "jpa");
     }
     @Provides
     @Singleton
     public DB db() throws UnknownHostException {
-        return new Mongo().getDB("jfokus");
+        return new Mongo().getDB("jpa");
     }
 
     @Provides

@@ -1,15 +1,15 @@
-package com.antwerkz.jfokus.mongo.dao;
+package com.antwerkz.mongo.dao;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-import com.antwerkz.jfokus.mongo.model.JfokusEntity;
-import com.antwerkz.jfokus.mongo.model.Product;
-import com.antwerkz.jfokus.mongo.model.ProductOrder;
-import com.antwerkz.jfokus.mongo.model.User;
-import com.antwerkz.jfokus.mongo.model.criteria.ProductOrderCriteria;
-import com.antwerkz.jfokus.mongo.model.criteria.UserCriteria;
+import com.antwerkz.mongo.model.MongoEntity;
+import com.antwerkz.mongo.model.Product;
+import com.antwerkz.mongo.model.ProductOrder;
+import com.antwerkz.mongo.model.User;
+import com.antwerkz.mongo.model.criteria.ProductOrderCriteria;
+import com.antwerkz.mongo.model.criteria.UserCriteria;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.annotations.Entity;
 import com.mongodb.BasicDBObject;
@@ -21,7 +21,7 @@ import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 
 @SuppressWarnings("unchecked")
-public class JfokusDao {
+public class MongoDao {
     public static final String PRODUCT_ORDERS = "product_orders";
     @Inject
     private DB db;
@@ -30,7 +30,7 @@ public class JfokusDao {
     @Inject
     private Jongo jongo;
 
-    public void save(JfokusEntity entity) {
+    public void save(MongoEntity entity) {
         if (entity instanceof Product) {
             DBObject dbObject = createDBObject((Product) entity);
             DBCollection collection = db.getCollection(extractCollection(entity.getClass()));
@@ -80,12 +80,9 @@ public class JfokusDao {
             .asList();
     }
 
-    public List<ProductOrder> findOrdersOverWithJongo(final double total) {
-        jongo.getCollection(PRODUCT_ORDERS).find("{ total : { $gte : # } }", total);
-        return ds.createQuery(ProductOrder.class)
-            .filter("total >", total)
-            .order("total")
-            .asList();
+    public Iterable<ProductOrder> findOrdersOverWithJongo(final double total) {
+        return jongo.getCollection(PRODUCT_ORDERS).find("{ total : { $gte : # } }", total).sort("{total : 1}").as(
+            ProductOrder.class);
     }
 
     public List<ProductOrder> findOrdersOverWithCritter(final double total) {

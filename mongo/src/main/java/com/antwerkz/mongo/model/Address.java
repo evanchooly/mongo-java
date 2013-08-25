@@ -1,10 +1,10 @@
-package com.antwerkz.jfokus.mongo.model;
+package com.antwerkz.mongo.model;
 
 import com.google.code.morphia.annotations.Entity;
 import com.mongodb.DBObject;
 
 @Entity("addresses")
-public class Address extends JfokusEntity {
+public class Address extends MongoEntity {
     private String street;
     private String street2;
     private String city;

@@ -1,17 +1,17 @@
-package com.antwerkz.jfokus.mongo.model;
+package com.antwerkz.mongo.model;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.antwerkz.jfokus.mongo.dao.JfokusDao;
+import com.antwerkz.mongo.dao.MongoDao;
 import com.google.code.morphia.annotations.Entity;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 
-@Entity(JfokusDao.PRODUCT_ORDERS)
-public class ProductOrder extends JfokusEntity {
+@Entity(MongoDao.PRODUCT_ORDERS)
+public class ProductOrder extends MongoEntity {
     private Date orderDate;
     private ObjectId userId;
     private List<Product> products = new ArrayList<>();
