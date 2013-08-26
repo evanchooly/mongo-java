@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.mongodb.DB;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import org.jongo.Jongo;
 
 public class MongoModule extends AbstractModule {
@@ -22,12 +22,12 @@ public class MongoModule extends AbstractModule {
     @Singleton
     public Datastore datastore() throws UnknownHostException {
         Morphia morphia = new Morphia().mapPackageFromClass(Address.class);
-        return morphia.createDatastore(new Mongo(), "jpa");
+        return morphia.createDatastore(new MongoClient(), "mongojpa");
     }
     @Provides
     @Singleton
     public DB db() throws UnknownHostException {
-        return new Mongo().getDB("jpa");
+        return new MongoClient().getDB("mongojpa");
     }
 
     @Provides

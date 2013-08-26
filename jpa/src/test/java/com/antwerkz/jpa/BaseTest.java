@@ -22,7 +22,7 @@ public class BaseTest {
     protected JpaDao dao;
 
     public BaseTest() {
-        Injector injector = Guice.createInjector(new JpaPersistModule("jpa"));
+        Injector injector = Guice.createInjector(new JpaPersistModule("mongojpa"));
         persistService = injector.getInstance(PersistService.class);
         persistService.start();
         injector.injectMembers(this);
