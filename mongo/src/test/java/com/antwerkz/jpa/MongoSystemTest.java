@@ -45,6 +45,8 @@ public class MongoSystemTest {
     try {
       Assert.assertNotNull(dao.findByHairColor("red"));
     } catch (Exception e) {
+      // morphia validation error
+      e.printStackTrace();
     }
   }
 

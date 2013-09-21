@@ -62,7 +62,7 @@ public class MongoDao {
   }
 
   public Product findProduct(final String name) {
-    return (Product) ds.createQuery(Product.class).field("name").equal(name).get();
+    return ds.createQuery(Product.class).field("name").equal(name).get();
   }
 
   public List<ProductOrder> findOrdersOver(final double total) {
@@ -94,9 +94,9 @@ public class MongoDao {
     return criteria.query().asList();
   }
 
-  public List<ProductOrder> findSmallOrders(final long count) {
+  public List<ProductOrder> findSmallOrders(final int count) {
     return ds.createQuery(ProductOrder.class)
-        .filter("size <=", 2)
+        .filter("size <=", count)
         .asList();
   }
 
@@ -125,7 +125,7 @@ public class MongoDao {
   }
 
   public User findUserWithMorphia(final ObjectId userId) {
-    return ds.createQuery(User.class).field("_id").equal(userId).get();
+    return ds.createQuery(User.class).field("id").equal(userId).get();
   }
 
   public User findUserWithJongo(final ObjectId userId) {

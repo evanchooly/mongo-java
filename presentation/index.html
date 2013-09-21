@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
     <head>
         <title>Mongo for JPA Developers</title>
 
@@ -31,7 +31,7 @@
                         <br>for JPA Developers</h1>
 
                     <h3>Justin Lee</h3>
-                    <h4>Member of Technical Staff<br>@ 10gen.com</h4>
+                    <h4>Member of Technical Staff<br>@ MongoDB.com</h4>
                     http://antwerkz.com
                     @evanchooly
                 </section>
@@ -41,14 +41,10 @@
 
                         <ul>
                             <li class="fragment roll-in">Java Developer since 1996</li>
-                            <li class="fragment roll-in">Currently Member of Technical Staff @ 10Gen
+                            <li class="fragment roll-in">Currently Member of Technical Staff @ MongoDB
+                            <li class="fragment roll-in">Java Driver, Morphia
                             <li class="fragment roll-in">Former member of the GlassFish/Grizzly team
-                                <ul>
-                                    <li class="fragment roll-in">Implemented the WebSocket support for GlassFish 3.1.x
-                                        and 3.2
-                                    <li class="fragment roll-in">JSR 356 (WebSocket) Expert Group Member</li>
-                                </ul>
-                            <li class="fragment roll-in">Worked with EE since 2000</li>
+                            <li class="fragment roll-in">Worked with EE since 1998 <em class="fragment fade-in small">ish</em></li>
                             <ul class="fragment roll-in">
                                 <li class="fragment shrink fade-out">We built our own ORM
                             </ul>
@@ -71,7 +67,7 @@
                             <li class="fragment roll-in">Document oriented</li>
                             <li class="fragment roll-in">Fully indexable</li>
                             <li class="fragment roll-in">Replication and HA</li>
-                            <li class="fragment roll-in">Map Reduce</li>
+                            <li class="fragment roll-in">Map Reduce and Aggregation framework</li>
                             <li class="fragment roll-in">GridFS</li>
                         </ul>
                     </section>
@@ -88,7 +84,7 @@
                                     <ul >
                                     <li class="fragment roll-in">actually BSON (<a href="http://bsonspec.org">http://bsonspec.org</a>) </li>
                                     <li class="fragment roll-in">BSON adds some "extra" information to documents, like length prefixes, that
-                                        traversal efficient.
+                                        make traversal efficient.
                                     </li>
                                 </ul>
                             </li>
@@ -128,7 +124,29 @@
                 </section>
 
                 <section>
-                    <h1>TO THE SHELL!</h1>
+                    <section>
+                        <h1>TO THE SHELL!</h1>
+                    </section>
+                    <section>
+                        <h1>Queries</h1>
+                        <ul>
+                            <li class="fragment roll-in">db.product_orders.find({ fulfilled : true }).limit(2).pretty()
+                            <li class="fragment roll-in">db.product_orders.find({ fulfilled : true, size : 3 }).limit(2).pretty()
+                            <li class="fragment roll-in">db.product_orders.find({ "products.name" : { $in : [ "Quadtech", "Biolux" ] } }).limit(2).pretty()
+                            <li class="fragment roll-in">db.product_orders.find({ "products.name" : "Quadtech" }).limit(2).pretty()
+                            <li class="fragment roll-in">db.product_orders.find({ $or : [ { size : 3 }, {fulfilled : false } ] }).limit(2).pretty()
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h1>Updates </h1>
+                        <ul>
+                            <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
+                            <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 }).pretty()
+                            <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )
+                            <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
+                        </ul>
+                    </section>
                 </section>
 
                 <!--scripted-->
@@ -142,16 +160,12 @@
                     <ul>
                         <li><a href="https://github.com/evanchooly/mongo4jpadevs">https://github.com/evanchooly/mongo4jpadevs</a></li>
                         <li><a href="http://www.mongodb.org/">http://www.mongodb.org/</a> Mongo Homepage</li>
-                        <li><a href="https://github.com/mongodb/morphia">https://github.com/mongodb/morphia</a> Homepage
-                        </li>
+                        <li><a href="https://github.com/mongodb/morphia">https://github.com/mongodb/morphia</a> Homepage</li>
                         <li><a href="http://jongo.org">http://jongo.org</a> Jongo</li>
                         <li>Disclaimer: My Stuff</li>
                         <ul>
                             <li>
                                 <a href="https://github.com/evanchooly/critter">https://github.com/evanchooly/critter</a> critter
-                            </li>
-                            <li>
-                                <a href="https://github.com/evanchooly/ophelia">https://github.com/evanchooly/ophelia</a> Ophelia
                             </li>
                         </ul>
                     </ul>
@@ -161,7 +175,7 @@
                         <br>for JPA Developers</h1>
 
                     <h3>Justin Lee</h3>
-                    <h4>Member of Technical Staff<br>@ 10gen.com</h4>
+                    <h4>Member of Technical Staff<br>@ MongoDB.com</h4>
                     http://antwerkz.com
                     @evanchooly
                 </section>
