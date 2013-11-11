@@ -58,95 +58,91 @@
 
                 </section>
                 <section>
-                    <section>
-                        <h2>What is Mongo?</h2>
-                        <ul>
-                            <li class="fragment roll-in">Name derives from "humongous" which mean big
-                            <li class="fragment roll-in">It is a scalable, high-performance, open source NoSQL database
-                            <li class="fragment roll-in">Written in C++</li>
-                            <li class="fragment roll-in">Document oriented</li>
-                            <li class="fragment roll-in">Fully indexable</li>
-                            <li class="fragment roll-in">Replication and HA</li>
-                            <li class="fragment roll-in">Map Reduce and Aggregation framework</li>
-                            <li class="fragment roll-in">GridFS</li>
-                        </ul>
-                    </section>
-                    <section>
-                        <h2>Document Oriented</h2>
-                        <ul>
-                            <li class="fragment roll-in">In JPA, one object is typically mapped across multiple cells
-                                in one row of a table
-                                <ul class="fragment roll-in">
-                                    <li>sometimes multiple objects with embedded entities</li>
-                                </ul>
-                            </li>
-                            <li class="fragment roll-in">Documents stored in json-style documents
-                                    <ul >
-                                    <li class="fragment roll-in">actually BSON (<a href="http://bsonspec.org">http://bsonspec.org</a>) </li>
-                                    <li class="fragment roll-in">BSON adds some "extra" information to documents, like length prefixes, that
-                                        make traversal efficient.
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </section>
-                    <section>
-                        <h4>What does a document look like?</h4>
-                        db.users.find().pretty()
-                        <pre>
-                            <code>
+                    <h2>What is Mongo?</h2>
+                    <ul>
+                        <li class="fragment roll-in">Name derives from "humongous" which mean big
+                        <li class="fragment roll-in">It is a scalable, high-performance, open source NoSQL database
+                        <li class="fragment roll-in">Written in C++</li>
+                        <li class="fragment roll-in">Document oriented</li>
+                        <li class="fragment roll-in">Fully indexable</li>
+                        <li class="fragment roll-in">Replication and HA</li>
+                        <li class="fragment roll-in">Map Reduce and Aggregation framework</li>
+                        <li class="fragment roll-in">GridFS</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Document Oriented</h2>
+                    <ul>
+                        <li class="fragment roll-in">In JPA, one object is typically mapped across multiple cells
+                            in one row of a table
+                            <ul class="fragment roll-in">
+                                <li>sometimes multiple objects with embedded entities</li>
+                            </ul>
+                        </li>
+                        <li class="fragment roll-in">Documents stored in json-style documents
+                                <ul >
+                                <li class="fragment roll-in">actually BSON (<a href="http://bsonspec.org">http://bsonspec.org</a>) </li>
+                                <li class="fragment roll-in">BSON adds some "extra" information to documents, like length prefixes, that
+                                    make traversal efficient.
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h4>What does a document look like?</h4>
+                    db.users.find().pretty()
+                    <pre>
+                        <code>
 {
-    "_id" : ObjectId("50fdb55a18c650918ee414be"),
-    "className" : "com.antwerkz.mongo.model.User",
-    "firstName" : "Jules",
-    "lastName" : "Winnfield",
-    "email" : "jules@hotmail.com",
-    "addresses" : [
-        {
-            "street" : "1858 N Vermont Ave",
-            "city" : "Los Angeles",
-            "state" : "CA",
-            "zip" : "90027"
-        }
-    ]
+"_id" : ObjectId("50fdb55a18c650918ee414be"),
+"className" : "com.antwerkz.mongo.model.User",
+"firstName" : "Jules",
+"lastName" : "Winnfield",
+"email" : "jules@hotmail.com",
+"addresses" : [
+    {
+        "street" : "1858 N Vermont Ave",
+        "city" : "Los Angeles",
+        "state" : "CA",
+        "zip" : "90027"
+    }
+]
 }
-                            </code>
-                        </pre>
-                    </section>
-                    <section>
-                        <h2>Replication and HA</h2>
-                        <ul>
-                            <li>eventually consistent</li>
-                            <li>replica sets</li>
-                            <li>sharding</li>
-                        </ul>
-                    </section>
+                        </code>
+                    </pre>
+                </section>
+                <section>
+                    <h2>Replication and HA</h2>
+                    <ul>
+                        <li>eventually consistent</li>
+                        <li>replica sets</li>
+                        <li>sharding</li>
+                    </ul>
                 </section>
 
                 <section>
-                    <section>
-                        <h1>TO THE SHELL!</h1>
-                    </section>
-                    <section>
-                        <h1>Queries</h1>
-                        <ul>
-                            <li class="fragment roll-in">db.product_orders.find({ fulfilled : true }).limit(2).pretty()
-                            <li class="fragment roll-in">db.product_orders.find({ fulfilled : true, size : 3 }).limit(2).pretty()
-                            <li class="fragment roll-in">db.product_orders.find({ "products.name" : { $in : [ "Quadtech", "Biolux" ] } }).limit(2).pretty()
-                            <li class="fragment roll-in">db.product_orders.find({ "products.name" : "Quadtech" }).limit(2).pretty()
-                            <li class="fragment roll-in">db.product_orders.find({ $or : [ { size : 3 }, {fulfilled : false } ] }).limit(2).pretty()
-                        </ul>
-                    </section>
+                    <h1>TO THE SHELL!</h1>
+                </section>
+                <section>
+                    <h1>Queries</h1>
+                    <ul>
+                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true }).limit(2).pretty()
+                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true, size : 3 }).limit(2).pretty()
+                        <li class="fragment roll-in">db.product_orders.find({ "products.name" : { $in : [ "Quadtech", "Biolux" ] } }).limit(2).pretty()
+                        <li class="fragment roll-in">db.product_orders.find({ "products.name" : "Quadtech" }).limit(2).pretty()
+                        <li class="fragment roll-in">db.product_orders.find({ $or : [ { size : 3 }, {fulfilled : false } ] }).limit(2).pretty()
+                    </ul>
+                </section>
 
-                    <section>
-                        <h1>Updates </h1>
-                        <ul>
-                            <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
-                            <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 }).pretty()
-                            <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )
-                            <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
-                        </ul>
-                    </section>
+                <section>
+                    <h1>Updates </h1>
+                    <ul>
+                        <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
+                        <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 }).pretty()
+                        <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )
+                        <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
+                    </ul>
                 </section>
 
                 <!--scripted-->
