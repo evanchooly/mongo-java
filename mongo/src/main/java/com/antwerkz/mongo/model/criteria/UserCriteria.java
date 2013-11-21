@@ -5,6 +5,7 @@ import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Criteria;
 import com.google.code.morphia.query.CriteriaContainer;
 import com.google.code.morphia.query.Query;
+import org.bson.types.ObjectId;
 
 public class UserCriteria {
   private Query<com.antwerkz.mongo.model.User> query;

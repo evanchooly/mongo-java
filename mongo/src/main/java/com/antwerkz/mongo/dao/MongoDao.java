@@ -1,9 +1,5 @@
 package com.antwerkz.mongo.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
-
 import com.antwerkz.mongo.model.MongoEntity;
 import com.antwerkz.mongo.model.Product;
 import com.antwerkz.mongo.model.ProductOrder;
@@ -19,6 +15,10 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Jongo;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class MongoDao {
@@ -66,7 +66,8 @@ public class MongoDao {
   }
 
   public List<ProductOrder> findOrdersOver(final double total) {
-    BasicDBObject query = new BasicDBObject("total", new BasicDBObject("$gte", total));
+    BasicDBObject query = new BasicDBObject("total", 
+                new BasicDBObject("$gte", total));
     List<ProductOrder> orders = new ArrayList<>();
     try (DBCursor cursor = db.getCollection(PRODUCT_ORDERS).find(query)) {
       while (cursor.hasNext()) {
@@ -84,7 +85,9 @@ public class MongoDao {
   }
 
   public Iterable<ProductOrder> findOrdersOverWithJongo(final double total) {
-    return jongo.getCollection(PRODUCT_ORDERS).find("{ total : { $gte : # } }", total).sort("{total : 1}").as(
+    return jongo.getCollection(PRODUCT_ORDERS).find(
+               "{ total : { $gte : # } }"
+                               , total).sort("{total : 1}").as(
         ProductOrder.class);
   }
 

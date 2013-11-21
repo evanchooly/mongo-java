@@ -1,14 +1,14 @@
 package com.antwerkz.mongo.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.antwerkz.mongo.dao.MongoDao;
 import com.google.code.morphia.annotations.Entity;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity(MongoDao.PRODUCT_ORDERS)
 public class ProductOrder extends MongoEntity {

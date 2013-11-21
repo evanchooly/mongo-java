@@ -50,7 +50,8 @@ public class JpaDao {
     }
 
     public List<ProductOrder> findOrdersOver(final double total) {
-        Query query = em.createQuery("select o from ProductOrder o join o.products p group by o having sum(p.price) > :total"
+        Query query = em.createQuery("select o from ProductOrder o join " +
+                 "o.products p group by o having sum(p.price) > :total"
             + " order by sum(p.price)")
             .setParameter("total", total);
         return query.getResultList();
