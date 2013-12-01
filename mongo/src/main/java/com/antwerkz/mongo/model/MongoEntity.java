@@ -1,6 +1,6 @@
 package com.antwerkz.mongo.model;
 
-import com.google.code.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Id;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 

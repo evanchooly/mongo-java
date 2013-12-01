@@ -3,8 +3,8 @@ package com.antwerkz;
 import java.net.UnknownHostException;
 
 import com.antwerkz.mongo.model.Address;
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;

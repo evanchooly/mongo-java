@@ -1,7 +1,7 @@
 package com.antwerkz.mongo.model;
 
 import com.antwerkz.mongo.dao.MongoDao;
-import com.google.code.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Entity;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;

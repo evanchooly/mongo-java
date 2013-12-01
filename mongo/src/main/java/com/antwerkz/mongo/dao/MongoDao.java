@@ -1,13 +1,15 @@
 package com.antwerkz.mongo.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+
 import com.antwerkz.mongo.model.MongoEntity;
 import com.antwerkz.mongo.model.Product;
 import com.antwerkz.mongo.model.ProductOrder;
 import com.antwerkz.mongo.model.User;
 import com.antwerkz.mongo.model.criteria.ProductOrderCriteria;
 import com.antwerkz.mongo.model.criteria.UserCriteria;
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.annotations.Entity;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -15,10 +17,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.jongo.Jongo;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.annotations.Entity;
 
 @SuppressWarnings("unchecked")
 public class MongoDao {

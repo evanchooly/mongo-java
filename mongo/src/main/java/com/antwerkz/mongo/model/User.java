@@ -3,7 +3,7 @@ package com.antwerkz.mongo.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.code.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Entity;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 

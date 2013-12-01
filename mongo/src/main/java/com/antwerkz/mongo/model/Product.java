@@ -3,7 +3,7 @@ package com.antwerkz.mongo.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.code.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Entity;
 import com.mongodb.DBObject;
 
 @Entity("products")
