@@ -13,8 +13,8 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
@@ -50,24 +50,25 @@ public class MongoSystemTest {
     @Test(dependsOnMethods = "placeOrder")
     public void compareQueryLayers() {
         List<ProductOrder> orders = dao.findOrdersOverWithDriver(10000.0);
-        List<ProductOrder> morphia = dao.findOrdersOverWithMorphia(10000.0);
-        Iterable<ProductOrder> jongo = dao.findOrdersOverWithJongo(10000.0);
-        Assert.assertEquals(orders.size(), 1);
-        compare(orders, morphia);
-        compare(orders, jongo);
+        compare(orders, dao.findOrdersOverWithMorphia(10000.0));
+        compare(orders, dao.findOrdersOverWithJongo(10000.0));
 
         orders = dao.findFulfilledOrders();
-        morphia = dao.findFulfilledOrdersWithMorphia();
-        jongo = dao.findFulfilledOrdersWithJongo();
-        compare(orders, morphia);
-        compare(orders, jongo);
+        compare(orders, dao.findFulfilledOrdersWithJongo());
+        compare(orders, dao.findFulfilledOrdersWithMorphia());
+
+        orders = dao.findUnfulfilledOrdersSmallerThan(3);
+        compare(orders, dao.findUnfulfilledOrdersSmallerThanWithJongo(3));
+        compare(orders, dao.findUnfulfilledOrdersSmallerThanWithMorphia(3));
     }
 
     private void compare(final List<ProductOrder> orders, final Iterable<ProductOrder> iterable) {
-        Iterator<ProductOrder> iterator = iterable.iterator();
-        for (ProductOrder order : orders) {
-            Assert.assertEquals(iterator.next(), order);
+        List<ProductOrder> other = new ArrayList<>();
+        for (ProductOrder productOrder : iterable) {
+            other.add(productOrder);
         }
+        System.out.printf("\n\n\ncomparing \n'%s' and \n '%s'\n", orders, other);
+        Assert.assertEquals(other, orders);
     }
 
     private void orderForBruce() {

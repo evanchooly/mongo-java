@@ -4,12 +4,11 @@ import com.antwerkz.mongo.model.MongoEntity;
 import com.antwerkz.mongo.model.Product;
 import com.antwerkz.mongo.model.ProductOrder;
 import com.antwerkz.mongo.model.User;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCursor;
+import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -52,13 +51,20 @@ public class MongoDao {
         List<ProductOrder> orders = new ArrayList<>();
 
         DBCursor cursor = db.getCollection("product_orders")
-                .find(new BasicDBObject("filled", true))
+                .find(new BasicDBObject("fulfilled", true))
                 .limit(2);
         while (cursor.hasNext()) {
             orders.add(new ProductOrder(cursor.next()));
         }
 
         return orders;
+    }
+
+    public List<ProductOrder> findFulfilledOrdersWithMorphia() {
+        return ds.createQuery(ProductOrder.class)
+                .field("fulfilled").equal(true)
+                .limit(2)
+                .asList();
     }
 
     public Iterable<ProductOrder> findFulfilledOrdersWithJongo() {
@@ -68,11 +74,35 @@ public class MongoDao {
                 .as(ProductOrder.class);
     }
 
-    public List<ProductOrder> findFulfilledOrdersWithMorphia() {
-        return ds.createQuery(ProductOrder.class)
-                .field("fulfilled").equal(true)
-                .limit(2)
-                .asList();
+    public List<ProductOrder> findUnfulfilledOrdersSmallerThan(int size) {
+        List<ProductOrder> orders = new ArrayList<>();
+
+        BasicDBList list = new BasicDBList();
+        list.add(new BasicDBObject("fulfilled", false));
+        list.add(new BasicDBObject("size", new BasicDBObject("$lte", size)));
+        DBObject or = new BasicDBObject("$or", list);
+        DBCursor cursor = db.getCollection("product_orders")
+                .find(or);
+        while (cursor.hasNext()) {
+            orders.add(new ProductOrder(cursor.next()));
+        }
+
+        return orders;
+    }
+
+    public Iterable<ProductOrder> findUnfulfilledOrdersSmallerThanWithJongo(int size) {
+        return jongo.getCollection("product_orders")
+                .find("{ $or : [ { size : { $lte : # } }, { fulfilled : false } ] }", size)
+                .as(ProductOrder.class);
+    }
+
+    public List<ProductOrder> findUnfulfilledOrdersSmallerThanWithMorphia(int size) {
+        Query<ProductOrder> query = ds.createQuery(ProductOrder.class);
+        query.or(
+                query.criteria("fulfilled").equal(false),
+                query.criteria("size").lessThanOrEq(3)
+        );
+        return query.asList();
     }
 
     public List<ProductOrder> findFulfilledOrdersOverSize(int size) {
@@ -131,7 +161,7 @@ public class MongoDao {
         return jongo.getCollection(PRODUCT_ORDERS).find(
                 "{ fulfilled : true, total : { $gte : # } }", total)
                 .sort("{total : 1}").as(
-                ProductOrder.class);
+                        ProductOrder.class);
     }
 
     public List<ProductOrder> findOrdersOverWithMorphia(final double total) {

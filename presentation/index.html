@@ -128,42 +128,49 @@
                 </section>
 
                 <section>
+                    <h2>Query Comparisons</h2>
+                    <h3 class="fragment roll-in">Java Driver</h3>
+                    <h3 class="fragment roll-in">Jongo</h3>
+                    <h3 class="fragment roll-in">Morphia</h3>
+                </section>
+
+                <section>
                     <h2>Queries</h2>
                     <ul>
                         <li class="fragment roll-in">db.product_orders.find({ fulfilled : true }).limit(2)
-                        <li class="fragment roll-in">Java Driver
-                            <pre><code class="java" data-trim>
+                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true, total : { $gte : 5000.0 } }).sort({total : 1})
+                        <li class="fragment roll-in">db.product_orders.find({ $or : [ { size : { $lte : 3 } }, { fulfilled : false } ] })
+                    </ul>
+                </section>
+                
+                <section>
+                    db.product_orders.find({ fulfilled : true }).limit(2)
+                    <pre class="fragment roll-in"><code class="java" data-trim>
 DBCursor cursor = db.getCollection("product_orders")
         .find(new BasicDBObject("filled", true))
         .limit(2);
 while (cursor.hasNext()) {
     orders.add(new ProductOrder(cursor.next()));
 }
-                            </code></pre>
+                    </code></pre>
 
-                        <li class="fragment roll-in roll-out">Jongo code
-                            <pre><code class="java" data-trim>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
 jongo.getCollection("product_orders")
     .find("{fulfilled : true}")
     .limit(2)
     .as(ProductOrder.class)
-                            </code></pre>
-                        <li class="fragment roll-in roll-out">Morphia code
-                            <pre><code class="java" data-trim>
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
 ds.createQuery(ProductOrder.class)
     .field("fulfilled").equal(true)
     .limit(2)
     .asList()
-                            </code></pre>
-                    </ul>
+                    </code></pre>
                 </section>
 
                 <section>
-                    <h2>Queries</h2>
-                    <ul>
-                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true, total : { $gte : 5000.0 } }).sort({total : 1})
-                        <li class="fragment roll-in">Java Driver
-                            <pre><code class="java" data-trim>
+                    db.product_orders.find({ fulfilled : true, total : { $gte : 5000.0 } }).sort({total : 1})
+                    <pre class="fragment roll-in"><code class="java" data-trim>
 BasicDBObject query = new BasicDBObject("fulfilled", true)
     .append("total", new BasicDBObject("$gte", 5000.0));
 DBCursor cursor = db.getCollection(PRODUCT_ORDERS).find(query)
@@ -171,32 +178,53 @@ DBCursor cursor = db.getCollection(PRODUCT_ORDERS).find(query)
 while (cursor.hasNext()) {
     orders.add(new ProductOrder(cursor.next()));
 }
-                            </code></pre>
+                    </code></pre>
 
-                        <li class="fragment roll-in roll-out">Jongo code
-                            <pre><code class="java" data-trim>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
 jongo.getCollection(PRODUCT_ORDERS).find(
     "{ fulfilled : true, total : { $gte : # } }", 5000.0)
     .sort("{total : 1}").as(ProductOrder.class)
-                            </code></pre>
-                        <li class="fragment roll-in roll-out">Morphia code
-                            <pre><code class="java" data-trim>
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
 ds.createQuery(ProductOrder.class)
     .field("fulfilled").equal(true)
     .filter("total >=", total)
 //  .field("total").greaterThanOrEq(total)   &lt;-- can be done either way
     .order("total").asList()
-                            </code></pre>
-                        <li class="fragment roll-in">db.product_orders.find({ "products.name" : { $in : [ "Quadtech", "Biolux" ] } }).limit(2).pretty()
-                        <li class="fragment roll-in">db.product_orders.find({ "products.name" : "Quadtech" }).limit(2).pretty()
-                        <li class="fragment roll-in">db.product_orders.find({ $or : [ { size : 3 }, {fulfilled : false } ] }).limit(2).pretty()
-                    </ul>
+                    </code></pre>
                 </section>
 
                 <section>
-                    <h1>Updates </h1>
+                    db.product_orders.find({ $or : [ { size : { $lte : 3 } }, { fulfilled : false } ] })
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+BasicDBList list = new BasicDBList();
+list.add(new BasicDBObject("fulfilled", false));
+list.add(new BasicDBObject("size", new BasicDBObject("$lte", size)));
+DBCursor cursor = db.getCollection("product_orders") 
+    .find(new BasicDBObject("$or", list));
+while (cursor.hasNext()) {
+    orders.add(new ProductOrder(cursor.next()));
+}
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection("product_orders")
+    .find("{$or : [{size: {$lte : #}}, {fulfilled : false}]}", size)
+    .as(ProductOrder.class);
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+Query&lt;ProductOrder&gt; query = ds.createQuery(ProductOrder.class);
+query.or(
+    query.criteria("fulfilled").equal(false),
+    query.criteria("size").lessThanOrEq(3)
+);
+return query.asList();
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Updates </h2>
                     <ul>
-                        <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
                         <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 }).pretty()
                         <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )
                         <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
