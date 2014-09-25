@@ -214,7 +214,7 @@ public class MongoDao {
         jongo.getCollection(PRODUCT_ORDERS)
                 .update("{ size : # }", size)
 //                .upsert().multi()
-                .with("{ $set : { total : 400 } }");
+                .with("{ $set : { total : # } }", newTotal);
 
         return jongo.getCollection(PRODUCT_ORDERS).find("{ size : # }", size).as(ProductOrder.class).iterator().next();
     }

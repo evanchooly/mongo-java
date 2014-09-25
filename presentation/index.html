@@ -135,6 +135,31 @@
                 </section>
 
                 <section>
+                    <h2>Getting started</h2>
+                    <pre class="fragment roll-in"><code class="xml" data-trim>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mongodb&lt;/groupId&gt;
+    &lt;artifactId&gt;mongo-java-driver&lt;/artifactId&gt;
+    &lt;version&gt;2.12.3&lt;/version&gt;
+&lt;/dependency&gt;
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="xml" data-trim>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.jongo&lt;/groupId&gt;
+    &lt;artifactId&gt;jongo&lt;/artifactId&gt;
+    &lt;version&gt;1.1&lt;/version&gt;
+&lt;/dependency&gt;
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="xml" data-trim>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mongodb.morphia&lt;/groupId&gt;
+    &lt;artifactId&gt;morphia&lt;/artifactId&gt;
+    &lt;version&gt;0.108&lt;/version&gt;
+&lt;/dependency&gt;
+                    </code></pre>
+                </section>
+                
+                <section>
                     <h2>Queries</h2>
                     <ul>
                         <li>db.product_orders.find({ fulfilled : true }).limit(2)
@@ -188,8 +213,8 @@ jongo.getCollection(PRODUCT_ORDERS).find(
                     <pre class="fragment roll-in"><code class="java" data-trim>
 ds.createQuery(ProductOrder.class)
     .field("fulfilled").equal(true)
-    .filter("total >=", total)
-//  .field("total").greaterThanOrEq(total)   &lt;-- can be done either way
+    .filter("total >=", 5000.0)
+//  .field("total").greaterThanOrEq(5000.0)   &lt;-- can be done either way
     .order("total").asList()
                     </code></pre>
                     <pre class="fragment roll-in"><code class="java" data-trim>
@@ -202,7 +227,7 @@ in   nin  all  exists  elem  size  within  near</code></pre>
                     <pre class="fragment roll-in"><code class="java" data-trim>
 BasicDBList list = new BasicDBList();
 list.add(new BasicDBObject("fulfilled", false));
-list.add(new BasicDBObject("size", new BasicDBObject("$lte", size)));
+list.add(new BasicDBObject("size", new BasicDBObject("$lte", 3)));
 DBCursor cursor = db.getCollection("product_orders") 
     .find(new BasicDBObject("$or", list));
 while (cursor.hasNext()) {
@@ -212,7 +237,7 @@ while (cursor.hasNext()) {
 
                     <pre class="fragment roll-in"><code class="java" data-trim>
 jongo.getCollection("product_orders")
-    .find("{$or : [{size: {$lte : #}}, {fulfilled : false}]}", size)
+    .find("{$or : [{size: {$lte : #}}, {fulfilled : false}]}", 3)
     .as(ProductOrder.class);
                     </code></pre>
                     <pre class="fragment roll-in"><code class="java" data-trim>
@@ -237,26 +262,26 @@ return query.asList();
                     db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
                  
                     <pre class="fragment roll-in"><code class="java" data-trim>
-BasicDBObject query = new BasicDBObject("size", size);
+BasicDBObject query = new BasicDBObject("size", 3);
 BasicDBObject update = new BasicDBObject("$set", 
-    new BasicDBObject("total", newTotal));
+    new BasicDBObject("total", 400));
 DBCollection collection = db.getCollection("product_orders");
 collection.update(query, update/*, true/false, true/false*/);
                     </code></pre>
 
                     <pre class="fragment roll-in"><code class="java" data-trim>
 jongo.getCollection("product_orders")
-    .update("{ size : # }", size)
+    .update("{ size : # }", 3)
 //      .upsert().multi()
-    .with("{ $set : { total : 400 } }");
+    .with("{ $set : { total : # } }", 400);
                     </code></pre>
                  
                     <pre class="fragment roll-in"><code class="java" data-trim>
 Query&lt;ProductOrder&gt; query = ds.createQuery(ProductOrder.class)
-    .filter("size", size);
+    .filter("size", 3);
 UpdateOperations&lt;ProductOrder&gt; update
     = ds.createUpdateOperations(ProductOrder.class)
-        .set("total", newTotal);
+        .set("total", 400);
 ds.update(query, update/* true/false for upsert*/);
 //  ds.updateFirst(query, update/* true/false for upsert*/);
                     </code></pre>
@@ -268,7 +293,7 @@ ds.update(query, update/* true/false for upsert*/);
              
                     <pre class="fragment roll-in"><code class="java" data-trim>
 BasicDBObject update = new BasicDBObject("$push",
-    new BasicDBObject("baubles", new BasicDBObject("color", color)));
+    new BasicDBObject("baubles", new BasicDBObject("color", "red")));
 db.getCollection(PRODUCT_ORDERS).update(new BasicDBObject(), update,
     false, true);
                     </code></pre>
@@ -277,14 +302,14 @@ db.getCollection(PRODUCT_ORDERS).update(new BasicDBObject(), update,
 jongo.getCollection(PRODUCT_ORDERS)
     .update("{}")
     .multi()
-    .with("{ $push : { baubles : { color : # } } }", color);
+    .with("{ $push : { baubles : { color : # } } }", "red");
                     </code></pre>
                  
                     <pre class="fragment roll-in"><code class="java" data-trim>
 UpdateOperations&lt;ProductOrder&gt; update =
     ds.createUpdateOperations(ProductOrder.class)
         .disableValidation()
-        .add("baubles", new BasicDBObject("color", color), true);
+        .add("baubles", new BasicDBObject("color", "red"), true);
 ds.update(ds.createQuery(ProductOrder.class), update, false);
                     </code></pre>
     
