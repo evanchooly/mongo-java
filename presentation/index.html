@@ -128,7 +128,7 @@
                 </section>
 
                 <section>
-                    <h2>Query Comparisons</h2>
+                    <h2>Comparisons</h2>
                     <h3 class="fragment roll-in">Java Driver</h3>
                     <h3 class="fragment roll-in">Jongo</h3>
                     <h3 class="fragment roll-in">Morphia</h3>
@@ -137,9 +137,9 @@
                 <section>
                     <h2>Queries</h2>
                     <ul>
-                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true }).limit(2)
-                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true, total : { $gte : 5000.0 } }).sort({total : 1})
-                        <li class="fragment roll-in">db.product_orders.find({ $or : [ { size : { $lte : 3 } }, { fulfilled : false } ] })
+                        <li>db.product_orders.find({ fulfilled : true }).limit(2)
+                        <li>db.product_orders.find({ fulfilled : true, total : { $gte : 5000.0 } }).sort({total : 1})
+                        <li>db.product_orders.find({ $or : [ { size : { $lte : 3 } }, { fulfilled : false } ] })
                     </ul>
                 </section>
                 
@@ -192,6 +192,9 @@ ds.createQuery(ProductOrder.class)
 //  .field("total").greaterThanOrEq(total)   &lt;-- can be done either way
     .order("total").asList()
                     </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+=    ==   &gt;    &gt;=      &lt;     &lt;=    !=      &lt;&gt;    mod
+in   nin  all  exists  elem  size  within  near</code></pre>
                 </section>
 
                 <section>
@@ -225,12 +228,68 @@ return query.asList();
                 <section>
                     <h2>Updates </h2>
                     <ul>
-                        <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 }).pretty()
-                        <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )
-                        <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
+                        <li>db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
+                        <li>db.product_orders.update({}, { $push : { baubles : { color : "red" } } } )
                     </ul>
                 </section>
 
+                <section>
+                    db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
+                 
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+BasicDBObject query = new BasicDBObject("size", size);
+BasicDBObject update = new BasicDBObject("$set", 
+    new BasicDBObject("total", newTotal));
+DBCollection collection = db.getCollection("product_orders");
+collection.update(query, update/*, true/false, true/false*/);
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection("product_orders")
+    .update("{ size : # }", size)
+//      .upsert().multi()
+    .with("{ $set : { total : 400 } }");
+                    </code></pre>
+                 
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+Query&lt;ProductOrder&gt; query = ds.createQuery(ProductOrder.class)
+    .filter("size", size);
+UpdateOperations&lt;ProductOrder&gt; update
+    = ds.createUpdateOperations(ProductOrder.class)
+        .set("total", newTotal);
+ds.update(query, update/* true/false for upsert*/);
+//  ds.updateFirst(query, update/* true/false for upsert*/);
+                    </code></pre>
+
+                </section>
+
+                <section>
+                    db.product_orders.update({}, { $push : { baubles : { color : "red" } } }, false, true )
+             
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+BasicDBObject update = new BasicDBObject("$push",
+    new BasicDBObject("baubles", new BasicDBObject("color", color)));
+db.getCollection(PRODUCT_ORDERS).update(new BasicDBObject(), update,
+    false, true);
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection(PRODUCT_ORDERS)
+    .update("{}")
+    .multi()
+    .with("{ $push : { baubles : { color : # } } }", color);
+                    </code></pre>
+                 
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+UpdateOperations&lt;ProductOrder&gt; update =
+    ds.createUpdateOperations(ProductOrder.class)
+        .disableValidation()
+        .add("baubles", new BasicDBObject("color", color), true);
+ds.update(ds.createQuery(ProductOrder.class), update, false);
+                    </code></pre>
+    
+                </section>
+                
                 <!--scripted-->
 
                 <section>
@@ -240,10 +299,10 @@ return query.asList();
                 <section>
                     <h2>Links</h2>
                     <ul>
-                        <li><a href="https://github.com/evanchooly/mongo4jpadevs">https://github.com/evanchooly/mongo4jpadevs</a></li>
-                        <li><a href="http://www.mongodb.org/">http://www.mongodb.org/</a> Mongo Homepage</li>
-                        <li><a href="https://github.com/mongodb/morphia">https://github.com/mongodb/morphia</a> Homepage</li>
-                        <li><a href="http://jongo.org">http://jongo.org</a> Jongo</li>
+                        <div><a href="http://www.mongodb.org/">http://www.mongodb.org/</a></div>
+                        <div><a href="https://github.com/mongodb/morphia">https://github.com/mongodb/morphia</a></div>
+                        <div><a href="http://jongo.org">http://jongo.org</a></div>
+                        <div class="fragment roll-in"><br/><a href="https://github.com/evanchooly/mongo4jpadevs">https://github.com/evanchooly/mongo4jpadevs</a></div>
                     </ul>
                 </section>
                 <section>

@@ -6,9 +6,11 @@ import com.antwerkz.mongo.model.Address;
 import com.antwerkz.mongo.model.Product;
 import com.antwerkz.mongo.model.ProductOrder;
 import com.antwerkz.mongo.model.User;
+import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.ValidationException;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
@@ -16,6 +18,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static java.lang.String.format;
 
 @SuppressWarnings("deprecation")
 @Test
@@ -25,29 +29,15 @@ public class MongoSystemTest {
     @Inject
     protected MongoDao dao;
 
-    public void placeOrder() {
-        orderForDave();
-        orderForJules();
-        orderForBruce();
-        List<ProductOrder> orders = dao.findOrdersOverWithDriver(10000.0);
-        ObjectId userId = orders.get(0).getUserId();
-        Assert.assertEquals(dao.findUserWithMorphia(userId).getFirstName(), "Bruce");
-        Assert.assertEquals(dao.findUserWithJongo(userId).getFirstName(), "Bruce");
-        List<ProductOrder> smallOrders = dao.findSmallOrders(2);
-        ProductOrder smallOrder = smallOrders.get(0);
-        userId = smallOrder.getUserId();
-        User user = dao.findUserWithMorphia(userId);
-        Assert.assertEquals(user.getFirstName(), "David");
-        Assert.assertTrue(smallOrder.getProducts().size() <= 2);
-        try {
-            Assert.assertNotNull(dao.findByHairColor("red"));
-        } catch (Exception e) {
-            // morphia validation error
-            e.printStackTrace();
-        }
+    @BeforeMethod
+    private void createDataSet() {
+        dao.clearAll();
+        createUser();
+        createCatalog();
+        placeOrders();
     }
 
-    @Test(dependsOnMethods = "placeOrder")
+    @Test
     public void compareQueryLayers() {
         List<ProductOrder> orders = dao.findOrdersOverWithDriver(10000.0);
         compare(orders, dao.findOrdersOverWithMorphia(10000.0));
@@ -62,13 +52,83 @@ public class MongoSystemTest {
         compare(orders, dao.findUnfulfilledOrdersSmallerThanWithMorphia(3));
     }
 
+    @Test
+    public void driverUpdates() {
+        ProductOrder original = dao.findOrdersBySize(3);
+        ProductOrder updated = dao.updateTotals(3, 400);
+        compare(original, updated);
+    }
+
+    @Test
+    public void jongoUpdates() {
+        ProductOrder original = dao.findOrdersBySize(3);
+        ProductOrder updated = dao.updateTotalsWithJongo(3, 400);
+        compare(original, updated);
+    }
+
+    @Test
+    public void morphiaUpdates() {
+        ProductOrder original = dao.findOrdersBySize(3);
+        ProductOrder updated = dao.updateTotalsWithMorphia(3, 400);
+        compare(original, updated);
+    }
+
+    @Test
+    public void driverPushes() {
+        check(dao.pushBaubles("red"));
+    }
+
+    @Test
+    public void jongoPushes() {
+        check(dao.pushBaublesWithJongo("red"));
+    }
+
+    @Test
+    public void morphiaPushes() {
+        check(dao.pushBaublesWithMorphia("red"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void check(final List<DBObject> updated) {
+        for (DBObject dbObject : updated) {
+            Assert.assertNotNull(dbObject.get("baubles"));
+            Assert.assertEquals(((List<DBObject>) dbObject.get("baubles")).get(0).get("color"), "red");
+
+        }
+    }
+
+    private void compare(final ProductOrder pOriginal, final ProductOrder pUpdated) {
+        double originalTotal = pOriginal.getTotal();
+        double updatedTotal = pUpdated.getTotal();
+        Assert.assertEquals(updatedTotal, 400.0, 0.001,
+                format("original: %f, updated: %f", originalTotal, updatedTotal));
+    }
+
     private void compare(final List<ProductOrder> orders, final Iterable<ProductOrder> iterable) {
         List<ProductOrder> other = new ArrayList<>();
         for (ProductOrder productOrder : iterable) {
             other.add(productOrder);
         }
-        System.out.printf("\n\n\ncomparing \n'%s' and \n '%s'\n", orders, other);
         Assert.assertEquals(other, orders);
+    }
+
+    private void placeOrders() {
+        orderForDave();
+        orderForJules();
+        orderForBruce();
+    }
+
+    @Test
+    public void findUsers() {
+        List<ProductOrder> orders = dao.findOrdersOverWithDriver(10000.0);
+        ObjectId userId = orders.get(0).getUserId();
+        Assert.assertEquals(dao.findUserWithMorphia(userId).getFirstName(), "Bruce");
+        Assert.assertEquals(dao.findUserWithJongo(userId).getFirstName(), "Bruce");
+    }
+
+    @Test(expectedExceptions = ValidationException.class)
+    public void findByHairColor() {
+        Assert.assertNotNull(dao.findByHairColor("red"));
     }
 
     private void orderForBruce() {
@@ -108,13 +168,6 @@ public class MongoSystemTest {
         User user = new User(firstName, lastName, email);
         user.getAddresses().add(new Address(street, city, state, zip));
         dao.save(user);
-    }
-
-    @BeforeTest
-    private void createDataSet() {
-        dao.clearAll();
-        createUser();
-        createCatalog();
     }
 
     private void createUser() {

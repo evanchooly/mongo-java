@@ -9,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class MongoDao {
     public List<ProductOrder> findFulfilledOrders() {
         List<ProductOrder> orders = new ArrayList<>();
 
-        DBCursor cursor = db.getCollection("product_orders")
+        DBCursor cursor = db.getCollection(PRODUCT_ORDERS)
                 .find(new BasicDBObject("fulfilled", true))
                 .limit(2);
         while (cursor.hasNext()) {
@@ -68,7 +69,7 @@ public class MongoDao {
     }
 
     public Iterable<ProductOrder> findFulfilledOrdersWithJongo() {
-        return jongo.getCollection("product_orders")
+        return jongo.getCollection(PRODUCT_ORDERS)
                 .find("{fulfilled : true}")
                 .limit(2)
                 .as(ProductOrder.class);
@@ -81,7 +82,7 @@ public class MongoDao {
         list.add(new BasicDBObject("fulfilled", false));
         list.add(new BasicDBObject("size", new BasicDBObject("$lte", size)));
         DBObject or = new BasicDBObject("$or", list);
-        DBCursor cursor = db.getCollection("product_orders")
+        DBCursor cursor = db.getCollection(PRODUCT_ORDERS)
                 .find(or);
         while (cursor.hasNext()) {
             orders.add(new ProductOrder(cursor.next()));
@@ -91,7 +92,7 @@ public class MongoDao {
     }
 
     public Iterable<ProductOrder> findUnfulfilledOrdersSmallerThanWithJongo(int size) {
-        return jongo.getCollection("product_orders")
+        return jongo.getCollection(PRODUCT_ORDERS)
                 .find("{ $or : [ { size : { $lte : # } }, { fulfilled : false } ] }", size)
                 .as(ProductOrder.class);
     }
@@ -108,7 +109,7 @@ public class MongoDao {
     public List<ProductOrder> findFulfilledOrdersOverSize(int size) {
         List<ProductOrder> orders = new ArrayList<>();
 
-        DBCursor cursor = db.getCollection("product_orders")
+        DBCursor cursor = db.getCollection(PRODUCT_ORDERS)
                 .find(new BasicDBObject("filled", true)
                         .append("size", new BasicDBObject("$gte", size)));
         while (cursor.hasNext()) {
@@ -119,7 +120,7 @@ public class MongoDao {
     }
 
     public Iterable<ProductOrder> findFulfilledOrdersOverSizeWithJongo(int size) {
-        return jongo.getCollection("product_orders")
+        return jongo.getCollection(PRODUCT_ORDERS)
                 .find("{fulfilled : true, size : { $gte : # }}", size)
                 .as(ProductOrder.class);
     }
@@ -173,6 +174,12 @@ public class MongoDao {
                 .asList();
     }
 
+    public ProductOrder findOrdersBySize(final int count) {
+        return ds.createQuery(ProductOrder.class)
+                .filter("size ==", count)
+                .get();
+    }
+
     public List<ProductOrder> findSmallOrders(final int count) {
         return ds.createQuery(ProductOrder.class)
                 .filter("size <=", count)
@@ -185,5 +192,87 @@ public class MongoDao {
 
     public User findUserByEmail(final String email) {
         return ds.createQuery(User.class).field("email").equal(email).get();
+    }
+
+    /**
+     * db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
+     */
+    public ProductOrder updateTotals(final int size, final double newTotal) {
+        BasicDBObject query = new BasicDBObject("size", size);
+        BasicDBObject update = new BasicDBObject("$set", new BasicDBObject("total", newTotal));
+
+        DBCollection collection = db.getCollection(PRODUCT_ORDERS);
+        collection.update(query, update/*, true/false, true/false*/);
+        
+        return new ProductOrder(collection.findOne(query));
+    }
+
+    /**
+     * db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
+     */
+    public ProductOrder updateTotalsWithJongo(final int size, final double newTotal) {
+        jongo.getCollection(PRODUCT_ORDERS)
+                .update("{ size : # }", size)
+//                .upsert().multi()
+                .with("{ $set : { total : 400 } }");
+
+        return jongo.getCollection(PRODUCT_ORDERS).find("{ size : # }", size).as(ProductOrder.class).iterator().next();
+    }
+
+    /**
+     * db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
+     */
+    public ProductOrder updateTotalsWithMorphia(final int size, final double newTotal) {
+        Query<ProductOrder> query = ds.createQuery(ProductOrder.class)
+                .filter("size", size);
+        UpdateOperations<ProductOrder> update = ds.createUpdateOperations(ProductOrder.class)
+                .set("total", newTotal);
+        ds.update(query, update/* true/false for upsert*/);
+//        ds.updateFirst(query, update/* true/false for upsert*/);
+        
+        return query.get();
+    }
+
+    /**
+     * db.product_orders.update({}, { $push : { baubles : { color : "red" } } }, false, true )
+     */
+    public List<DBObject> pushBaubles(final String color) {
+        BasicDBObject update = new BasicDBObject("$push", new BasicDBObject("baubles", new BasicDBObject("color", color)));
+        db.getCollection(PRODUCT_ORDERS).update(new BasicDBObject(), update, false, true);
+        return findAll(PRODUCT_ORDERS);
+    }
+
+    /**
+     * db.product_orders.update({}, { $push : { baubles : { color : "red" } } }, false, true )
+     */
+    public List<DBObject> pushBaublesWithJongo(final String color) {
+        jongo.getCollection(PRODUCT_ORDERS)
+                .update("{}")
+                .multi()
+                .with("{ $push : { baubles : { color : # } } }", color);
+        
+        return findAll(PRODUCT_ORDERS);
+    }
+
+    /**
+     * db.product_orders.update({}, { $push : { baubles : { color : "red" } } }, false, true )
+     */
+    public List<DBObject> pushBaublesWithMorphia(final String color) {
+        UpdateOperations<ProductOrder> update = ds.createUpdateOperations(ProductOrder.class)
+                .disableValidation()
+                .add("baubles", new BasicDBObject("color", color), true);
+        ds.update(ds.createQuery(ProductOrder.class), update, false);
+        
+        return findAll(PRODUCT_ORDERS);
+    }
+
+    public List<DBObject> findAll(final String collectionName) {
+        DBCollection collection = db.getCollection(collectionName);
+        List<DBObject> list = new ArrayList<>();
+        for (final DBObject dbObject : collection.find()) {
+            list.add(dbObject);
+        }
+
+        return list;
     }
 }
