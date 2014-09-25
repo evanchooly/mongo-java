@@ -1,4 +1,4 @@
 Mongo for JPA Developers
 =============
 
-My presentation "Mongo for Hibernate/JPA Developers" originally given at Jfokus 2013
+An introductory presentation on getting started with mongodb and Java covering usage of the driver, jongo, and morphia.
