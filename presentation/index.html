@@ -5,11 +5,11 @@
 
         <meta name="author" content="Justin lee">
 
-        <link rel="stylesheet" href="css/reveal.css">
-        <link rel="stylesheet" href="css/theme/moon.css" id="theme">
+        <link rel="stylesheet" href="reveal.js-2.6.2/css/reveal.css">
+        <link rel="stylesheet" href="reveal.js-2.6.2/css/theme/moon.css" id="theme">
 
         <!-- For syntax highlighting -->
-        <link rel="stylesheet" href="lib/css/zenburn.css">
+        <link rel="stylesheet" href="reveal.js-2.6.2/lib/css/zenburn.css">
 
         <!-- If the query includes 'print-pdf', use the PDF print sheet -->
         <script>
@@ -22,6 +22,7 @@
                 list-style-image: none;
             }
         </style>
+        <link rel="stylesheet" href="css/presentation.css">
     </head>
     <body>
         <div class="reveal">
@@ -99,8 +100,7 @@
                 <section>
                     <h4>What does a document look like?</h4>
                     db.users.find().pretty()
-                    <pre>
-                        <code>
+                    <pre><code class="json" data-trim>
 {
 "_id" : ObjectId("50fdb55a18c650918ee414be"),
 "className" : "com.antwerkz.mongo.model.User",
@@ -116,8 +116,7 @@
     }
 ]
 }
-                        </code>
-                    </pre>
+                        </code></pre>
                 </section>
                 <section>
                     <h2>Replication and HA</h2>
@@ -129,26 +128,193 @@
                 </section>
 
                 <section>
-                    <h1>Queries</h1>
+                    <h2>Comparisons</h2>
+                    <h3 class="fragment roll-in">Java Driver</h3>
+                    <h3 class="fragment roll-in">Jongo</h3>
+                    <h3 class="fragment roll-in">Morphia</h3>
+                </section>
+
+                <section>
+                    <h2>Getting started</h2>
+                    <pre class="fragment roll-in"><code class="xml" data-trim>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mongodb&lt;/groupId&gt;
+    &lt;artifactId&gt;mongo-java-driver&lt;/artifactId&gt;
+    &lt;version&gt;2.12.3&lt;/version&gt;
+&lt;/dependency&gt;
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="xml" data-trim>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.jongo&lt;/groupId&gt;
+    &lt;artifactId&gt;jongo&lt;/artifactId&gt;
+    &lt;version&gt;1.1&lt;/version&gt;
+&lt;/dependency&gt;
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="xml" data-trim>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mongodb.morphia&lt;/groupId&gt;
+    &lt;artifactId&gt;morphia&lt;/artifactId&gt;
+    &lt;version&gt;0.108&lt;/version&gt;
+&lt;/dependency&gt;
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <h2>Queries</h2>
                     <ul>
-                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true }).limit(2).pretty()
-                        <li class="fragment roll-in">db.product_orders.find({ fulfilled : true, size : 3 }).limit(2).pretty()
-                        <li class="fragment roll-in">db.product_orders.find({ "products.name" : { $in : [ "Quadtech", "Biolux" ] } }).limit(2).pretty()
-                        <li class="fragment roll-in">db.product_orders.find({ "products.name" : "Quadtech" }).limit(2).pretty()
-                        <li class="fragment roll-in">db.product_orders.find({ $or : [ { size : 3 }, {fulfilled : false } ] }).limit(2).pretty()
+                        <li>db.product_orders.find({ fulfilled : true }).limit(2)
+                        <li>db.product_orders.find({ fulfilled : true, total : { $gte : 5000.0 } }).sort({total : 1})
+                        <li>db.product_orders.find({ $or : [ { size : { $lte : 3 } }, { fulfilled : false } ] })
+                    </ul>
+                </section>
+                
+                <section>
+                    db.product_orders.find({ fulfilled : true }).limit(2)
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+DBCursor cursor = db.getCollection("product_orders")
+        .find(new BasicDBObject("filled", true))
+        .limit(2);
+while (cursor.hasNext()) {
+    orders.add(new ProductOrder(cursor.next()));
+}
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection("product_orders")
+    .find("{fulfilled : true}")
+    .limit(2)
+    .as(ProductOrder.class)
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+ds.createQuery(ProductOrder.class)
+    .field("fulfilled").equal(true)
+    .limit(2)
+    .asList()
+                    </code></pre>
+                </section>
+
+                <section>
+                    db.product_orders.find({ fulfilled : true, total : { $gte : 5000.0 } }).sort({total : 1})
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+BasicDBObject query = new BasicDBObject("fulfilled", true)
+    .append("total", new BasicDBObject("$gte", 5000.0));
+DBCursor cursor = db.getCollection(PRODUCT_ORDERS).find(query)
+    .sort(new BasicDBObject("total", 1));
+while (cursor.hasNext()) {
+    orders.add(new ProductOrder(cursor.next()));
+}
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection(PRODUCT_ORDERS).find(
+    "{ fulfilled : true, total : { $gte : # } }", 5000.0)
+    .sort("{total : 1}").as(ProductOrder.class)
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+ds.createQuery(ProductOrder.class)
+    .field("fulfilled").equal(true)
+    .filter("total >=", 5000.0)
+//  .field("total").greaterThanOrEq(5000.0)   &lt;-- can be done either way
+    .order("total").asList()
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+=    ==   &gt;    &gt;=      &lt;     &lt;=    !=      &lt;&gt;    mod
+in   nin  all  exists  elem  size  within  near</code></pre>
+                </section>
+
+                <section>
+                    db.product_orders.find({ $or : [ { size : { $lte : 3 } }, { fulfilled : false } ] })
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+BasicDBList list = new BasicDBList();
+list.add(new BasicDBObject("fulfilled", false));
+list.add(new BasicDBObject("size", new BasicDBObject("$lte", 3)));
+DBCursor cursor = db.getCollection("product_orders") 
+    .find(new BasicDBObject("$or", list));
+while (cursor.hasNext()) {
+    orders.add(new ProductOrder(cursor.next()));
+}
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection("product_orders")
+    .find("{$or : [{size: {$lte : #}}, {fulfilled : false}]}", 3)
+    .as(ProductOrder.class);
+                    </code></pre>
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+Query&lt;ProductOrder&gt; query = ds.createQuery(ProductOrder.class);
+query.or(
+    query.criteria("fulfilled").equal(false),
+    query.criteria("size").lessThanOrEq(3)
+);
+return query.asList();
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Updates </h2>
+                    <ul>
+                        <li>db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
+                        <li>db.product_orders.update({}, { $push : { baubles : { color : "red" } } } )
                     </ul>
                 </section>
 
                 <section>
-                    <h1>Updates </h1>
-                    <ul>
-                        <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
-                        <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $set : { "total" : 400 } } ) ; db.product_orders.find({ size : 3 }).pretty()
-                        <li class="fragment roll-in">db.product_orders.update({ size : 3 }, { $push : { "baubles" : { color : "red" } } } )
-                        <li class="fragment roll-in">db.product_orders.find({ size : 3 }).pretty()
-                    </ul>
+                    db.product_orders.update({ size : 3 }, { $set : { total : 400 } } )
+                 
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+BasicDBObject query = new BasicDBObject("size", 3);
+BasicDBObject update = new BasicDBObject("$set", 
+    new BasicDBObject("total", 400));
+DBCollection collection = db.getCollection("product_orders");
+collection.update(query, update/*, true/false, true/false*/);
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection("product_orders")
+    .update("{ size : # }", 3)
+//      .upsert().multi()
+    .with("{ $set : { total : # } }", 400);
+                    </code></pre>
+                 
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+Query&lt;ProductOrder&gt; query = ds.createQuery(ProductOrder.class)
+    .filter("size", 3);
+UpdateOperations&lt;ProductOrder&gt; update
+    = ds.createUpdateOperations(ProductOrder.class)
+        .set("total", 400);
+ds.update(query, update/* true/false for upsert*/);
+//  ds.updateFirst(query, update/* true/false for upsert*/);
+                    </code></pre>
+
                 </section>
 
+                <section>
+                    db.product_orders.update({}, { $push : { baubles : { color : "red" } } }, false, true )
+             
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+BasicDBObject update = new BasicDBObject("$push",
+    new BasicDBObject("baubles", new BasicDBObject("color", "red")));
+db.getCollection(PRODUCT_ORDERS).update(new BasicDBObject(), update,
+    false, true);
+                    </code></pre>
+
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+jongo.getCollection(PRODUCT_ORDERS)
+    .update("{}")
+    .multi()
+    .with("{ $push : { baubles : { color : # } } }", "red");
+                    </code></pre>
+                 
+                    <pre class="fragment roll-in"><code class="java" data-trim>
+UpdateOperations&lt;ProductOrder&gt; update =
+    ds.createUpdateOperations(ProductOrder.class)
+        .disableValidation()
+        .add("baubles", new BasicDBObject("color", "red"), true);
+ds.update(ds.createQuery(ProductOrder.class), update, false);
+                    </code></pre>
+    
+                </section>
+                
                 <!--scripted-->
 
                 <section>
@@ -158,16 +324,10 @@
                 <section>
                     <h2>Links</h2>
                     <ul>
-                        <li><a href="https://github.com/evanchooly/mongo4jpadevs">https://github.com/evanchooly/mongo4jpadevs</a></li>
-                        <li><a href="http://www.mongodb.org/">http://www.mongodb.org/</a> Mongo Homepage</li>
-                        <li><a href="https://github.com/mongodb/morphia">https://github.com/mongodb/morphia</a> Homepage</li>
-                        <li><a href="http://jongo.org">http://jongo.org</a> Jongo</li>
-                        <li>Disclaimer: My Stuff</li>
-                        <ul>
-                            <li>
-                                <a href="https://github.com/evanchooly/critter">https://github.com/evanchooly/critter</a> critter
-                            </li>
-                        </ul>
+                        <div><a href="http://www.mongodb.org/">http://www.mongodb.org/</a></div>
+                        <div><a href="https://github.com/mongodb/morphia">https://github.com/mongodb/morphia</a></div>
+                        <div><a href="http://jongo.org">http://jongo.org</a></div>
+                        <div class="fragment roll-in"><br/><a href="https://github.com/evanchooly/mongo4jpadevs">https://github.com/evanchooly/mongo-java</a></div>
                     </ul>
                 </section>
                 <section>
@@ -182,8 +342,8 @@
             </div>
         </div>
 
-        <script src="lib/js/head.min.js"></script>
-        <script src="js/reveal.min.js"></script>
+        <script src="reveal.js-2.6.2/lib/js/head.min.js"></script>
+        <script src="reveal.js-2.6.2/js/reveal.min.js"></script>
 
         <script>
 
@@ -195,28 +355,15 @@
                 history: true,
                 center: true,
                 theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-                transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
                 // Optional libraries used to extend on reveal.js
                 dependencies: [
-                    { src: 'lib/js/classList.js', condition: function () {
-                        return !document.body.classList;
-                    } },
-                    { src: 'plugin/markdown/showdown.js', condition: function () {
-                        return !!document.querySelector('[data-markdown]');
-                    } },
-                    { src: 'plugin/markdown/markdown.js', condition: function () {
-                        return !!document.querySelector('[data-markdown]');
-                    } },
-                    { src: 'plugin/highlight/highlight.js', async: true, callback: function () {
-                        hljs.initHighlightingOnLoad();
-                    } },
-                    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function () {
-                        return !!document.body.classList;
-                    } },
-                    { src: 'plugin/notes/notes.js', async: true, condition: function () {
-                        return !!document.body.classList;
-                    } }
-                    // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+                    { src: 'reveal.js-2.6.2/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'reveal.js-2.6.2/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'reveal.js-2.6.2/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'reveal.js-2.6.2/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'reveal.js-2.6.2/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'reveal.js-2.6.2/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
                 ]
             });
 

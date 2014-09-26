@@ -1,10 +1,9 @@
 package com.antwerkz.mongo.model;
 
 import com.antwerkz.mongo.dao.MongoDao;
-import org.mongodb.morphia.annotations.Entity;
-import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,8 +27,7 @@ public class ProductOrder extends MongoEntity {
         userId = get(dbObject, "userId");
         total = get(dbObject, "total");
         size = get(dbObject, "size");
-        BasicDBList list = get(dbObject, "products");
-        for (Object o : list) {
+        for (Object o : this.<List>get(dbObject, "products")) {
             products.add(new Product((DBObject) o));
         }
     }
